@@ -2029,7 +2029,33 @@ async function loadWeightHistory() {
     if (progEl) progEl.textContent = latest.weight_kg;
   }
 }
+function connectWithings() {
+  if (!currentUser) return;
+  const clientId = 'YOUR_WITHINGS_CLIENT_ID';
+  const redirectUri = encodeURIComponent('https://app.maximalperformance.nz');
+  const state = currentUser.id;
+  const scope = encodeURIComponent('user.metrics');
+  const url = `https://account.withings.com/oauth2_user/authorize2?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
+  window.location.href = url;
+}
 
+function updateWithingsStatus(connected) {
+  const title = document.getElementById('withings-connect-title');
+  const sub = document.getElementById('withings-connect-sub');
+  const status = document.getElementById('withings-connect-status');
+  if (!title) return;
+  if (connected) {
+    title.textContent = 'Withings Connected';
+    sub.textContent = 'Body+ Scale · Syncing daily';
+    status.textContent = 'ACTIVE';
+    status.style.background = 'var(--green)';
+  } else {
+    title.textContent = 'Connect Withings Scale';
+    sub.textContent = 'Tap to sync your body metrics daily';
+    status.textContent = 'CONNECT';
+    status.style.background = 'var(--green)';
+  }
+}
 function loadDashboard() {
   if (currentProfile) {
     const nameEl = document.querySelector('.hero-name');
