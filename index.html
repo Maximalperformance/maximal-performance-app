@@ -1366,14 +1366,14 @@ border-color: var(–amber);
     </div>
   </div>
 
-  <div class="withings-connect" id="withings-connect-btn" onclick="connectWithings()">
-        <div class="withings-connect-icon">⚖️</div>
-        <div class="withings-connect-text">
-          <div class="withings-connect-title" id="withings-connect-title">Connect Withings Scale</div>
-          <div class="withings-connect-sub" id="withings-connect-sub">Tap to sync your body metrics daily</div>
-        </div>
-        <div class="withings-connect-btn" id="withings-connect-status">CONNECT</div>
-      </div>
+  <div class="withings-connect">
+    <div class="withings-connect-icon">⚖️</div>
+    <div class="withings-connect-text">
+      <div class="withings-connect-title">Withings Connected</div>
+      <div class="withings-connect-sub">Body+ Scale · Syncing daily</div>
+    </div>
+    <div class="withings-connect-btn">ACTIVE</div>
+  </div>
 
   <div class="settings-list">
     <div class="settings-item">
@@ -1997,6 +1997,34 @@ async function handleSignOut() {
   goTo('screen-onboard');
 }
 
+function connectWithings() {
+  if (!currentUser) return;
+  const clientId = '28b5fdfe6b5a73b183d8ada6b20cd7c1e32daa11cf9b7c3d5026c584ca6fba28';
+  const redirectUri = encodeURIComponent('https://app.maximalperformance.nz');
+  const state = currentUser.id;
+  const scope = encodeURIComponent('user.metrics');
+  const url = `https://account.withings.com/oauth2_user/authorize2?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
+  window.location.href = url;
+}
+
+function updateWithingsStatus(connected) {
+  const title = document.getElementById('withings-connect-title');
+  const sub = document.getElementById('withings-connect-sub');
+  const status = document.getElementById('withings-connect-status');
+  if (!title) return;
+  if (connected) {
+    title.textContent = 'Withings Connected';
+    sub.textContent = 'Body+ Scale · Syncing daily';
+    status.textContent = 'ACTIVE';
+    status.style.background = 'var(--green)';
+  } else {
+    title.textContent = 'Connect Withings Scale';
+    sub.textContent = 'Tap to sync your body metrics daily';
+    status.textContent = 'CONNECT';
+    status.style.background = 'var(--green)';
+  }
+}
+
 async function loadUserProfile() {
   const client = getSupabase();
   if (!client || !currentUser) return;
@@ -2030,33 +2058,7 @@ async function loadWeightHistory() {
     if (progEl) progEl.textContent = latest.weight_kg;
   }
 }
-function connectWithings() {
-  if (!currentUser) return;
-  const clientId = '28b5fdfe6b5a73b183d8ada6b20cd7c1e32daa11cf9b7c3d5026c584ca6fba28';
-  const redirectUri = encodeURIComponent('https://app.maximalperformance.nz');
-  const state = currentUser.id;
-  const scope = encodeURIComponent('user.metrics');
-  const url = `https://account.withings.com/oauth2_user/authorize2?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
-  window.location.href = url;
-}
 
-function updateWithingsStatus(connected) {
-  const title = document.getElementById('withings-connect-title');
-  const sub = document.getElementById('withings-connect-sub');
-  const status = document.getElementById('withings-connect-status');
-  if (!title) return;
-  if (connected) {
-    title.textContent = 'Withings Connected';
-    sub.textContent = 'Body+ Scale · Syncing daily';
-    status.textContent = 'ACTIVE';
-    status.style.background = 'var(--green)';
-  } else {
-    title.textContent = 'Connect Withings Scale';
-    sub.textContent = 'Tap to sync your body metrics daily';
-    status.textContent = 'CONNECT';
-    status.style.background = 'var(--green)';
-  }
-}
 function loadDashboard() {
   if (currentProfile) {
     const nameEl = document.querySelector('.hero-name');
@@ -2831,6 +2833,7 @@ setInterval(showNotification, 30000);
 
 // Make meal items in nutrition screen open recipe detail
 document.addEventListener('DOMContentLoaded', async () => {
+
   // Handle Withings OAuth callback
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
@@ -2838,30 +2841,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (code && state) {
     try {
-      const res = await fetch(`https://hpmwylrqrlttyzigpvlc.supabase.co/functions/v1/withings-auth?code=${code}&state=${state}`);
+      const supabaseProject = SUPABASE_URL.replace('https://', '').replace('.supabase.co', '');
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/withings-auth?code=${code}&state=${state}`, {
+        headers: { 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
       const data = await res.json();
+      history.replaceState(null, '', '/');
       if (data.success) {
-        history.replaceState(null, '', '/');
         await initAuth();
-        alert('Withings scale connected! Your metrics will sync daily.');
+        setTimeout(() => alert('Withings scale connected! Your metrics will sync daily.'), 500);
+      } else {
+        await initAuth();
       }
     } catch(e) {
       console.error('Withings auth error:', e);
+      history.replaceState(null, '', '/');
+      await initAuth();
     }
     return;
   }
 
-  // Init Supabase auth — auto-login if session exists
+  // Normal auth init
   initAuth();
-
-  // Route smoothie card to recipe screen
-  const mealItems = document.querySelectorAll('#screen-nutrition .meal-item');
-  if (mealItems[2]) {
-    mealItems[2].addEventListener('click', () => goTo('screen-recipe'));
-  }
-  const coachCard = document.querySelector('#screen-dashboard .coach-card');
-  if (coachCard) coachCard.style.cursor = 'pointer';
-});
 
   // Route smoothie card to recipe screen
   const mealItems = document.querySelectorAll('#screen-nutrition .meal-item');
