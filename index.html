@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" style="background:#0a0a0a;">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Maximal Performance</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --black: #0a0a0a;
@@ -27,9 +27,9 @@
 
 body {
 background: #0a0a0a;
-    background: var(--black);
-    color: #e8e8e4;
-    color: var(--snow);
+background: var(–black);
+color: #e8e8e4;
+color: var(–snow);
 font-family: ‘DM Sans’, sans-serif;
 min-height: 100vh;
 overflow-x: hidden;
@@ -47,13 +47,12 @@ overflow: hidden;
 
 /* SCREENS */
 .screen {
-    display: none;
-    min-height: 100vh;
-    flex-direction: column;
-    animation: fadeIn 0.3s ease;
-  }
-  .screen.active { display: flex; }
-  #screen-onboard { display: flex; }
+display: none;
+min-height: 100vh;
+flex-direction: column;
+animation: fadeIn 0.3s ease;
+}
+.screen.active { display: flex; }
 
 @keyframes fadeIn {
 from { opacity: 0; transform: translateY(8px); }
