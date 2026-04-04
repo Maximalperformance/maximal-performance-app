@@ -1,0 +1,2604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maximal Performance</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --surface3: #222222;
+    --amber: #F5A623;
+    --amber-dim: #c47d0e;
+    --amber-glow: rgba(245,166,35,0.12);
+    --snow: #e8e8e4;
+    --muted: #666;
+    --border: #2a2a2a;
+    --green: #4caf72;
+    --blue: #4a90d9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--snow);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* PHONE SHELL */
+  .phone-shell {
+    max-width: 390px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: var(--black);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* SCREENS */
+  .screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  /* TOP NAV */
+  .top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 20px 16px;
+    flex-shrink: 0;
+  }
+  .back-btn {
+    width: 36px; height: 36px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--snow);
+    font-size: 16px;
+    transition: background 0.2s;
+  }
+  .back-btn:hover { background: var(--surface3); }
+  .nav-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--snow);
+  }
+  .nav-action {
+    width: 36px; height: 36px;
+    background: var(--amber-glow);
+    border: 1px solid var(--amber);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--amber);
+    font-size: 15px;
+    transition: background 0.2s;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 390px;
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 12px 8px 24px;
+    z-index: 100;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 6px 4px;
+    border-radius: 12px;
+    transition: background 0.2s;
+  }
+  .nav-item:hover { background: var(--surface2); }
+  .nav-icon { font-size: 20px; }
+  .nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .nav-item.active .nav-label { color: var(--amber); }
+  .nav-item.active .nav-icon { filter: drop-shadow(0 0 6px var(--amber)); }
+
+  /* SCROLLABLE CONTENT */
+  .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 100px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scroll-content::-webkit-scrollbar { display: none; }
+
+  /* =================== SCREEN: DASHBOARD =================== */
+  .hero-banner {
+    margin: 0 16px 20px;
+    background: linear-gradient(135deg, #1a1400 0%, #2a1f00 50%, #1a1400 100%);
+    border: 1px solid var(--amber-dim);
+    border-radius: 20px;
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-banner::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(245,166,35,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-banner::after {
+    content: 'MAXIMAL';
+    position: absolute;
+    bottom: -10px; right: -5px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: rgba(245,166,35,0.06);
+    letter-spacing: 4px;
+    pointer-events: none;
+  }
+  .hero-greeting {
+    font-size: 12px;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 20px;
+  }
+  .hero-stat { }
+  .hero-stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--amber);
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .hero-stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--snow);
+  }
+  .section-link {
+    font-size: 12px;
+    color: var(--amber);
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  /* WITHINGS CARD */
+  .withings-card {
+    margin: 0 16px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    position: relative;
+  }
+  .withings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .withings-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .withings-dot {
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .withings-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-family: 'DM Mono', monospace;
+  }
+  .withings-sync {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .metric-box {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .metric-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .metric-unit {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 2px;
+  }
+  .metric-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 4px;
+  }
+  .metric-change {
+    font-size: 10px;
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+  .metric-change.up { color: var(--green); }
+  .metric-change.down { color: #e05a5a; }
+
+  /* MINI CHART */
+  .mini-chart {
+    margin-top: 14px;
+    height: 48px;
+    position: relative;
+  }
+  .chart-svg { width: 100%; height: 100%; }
+
+  /* TODAY'S PLAN CARD */
+  .plan-card {
+    margin: 0 16px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .plan-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--amber-dim);
+  }
+  .plan-card-inner {
+    padding: 18px;
+  }
+  .plan-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--amber-glow);
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 10px;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .plan-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .plan-meta {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    gap: 12px;
+  }
+  .plan-progress-bar {
+    height: 3px;
+    background: var(--surface3);
+    margin-top: 14px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .plan-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber-dim), var(--amber));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  /* COACH MESSAGE */
+  .coach-card {
+    margin: 0 16px 24px;
+    background: linear-gradient(135deg, var(--surface) 0%, #1a1400 100%);
+    border: 1px solid rgba(245,166,35,0.2);
+    border-radius: 18px;
+    padding: 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .coach-avatar {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--amber-dim), var(--amber));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--black);
+    flex-shrink: 0;
+  }
+  .coach-msg-name {
+    font-size: 11px;
+    color: var(--amber);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .coach-msg-text {
+    font-size: 13px;
+    color: var(--snow);
+    line-height: 1.5;
+  }
+
+  /* =================== SCREEN: NUTRITION =================== */
+  .macro-ring-section {
+    margin: 0 16px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .ring-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+  }
+  .ring-svg { transform: rotate(-90deg); }
+  .ring-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .ring-cals {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--amber);
+  }
+  .ring-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .macro-details { flex: 1; }
+  .macro-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .macro-name { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .macro-bar-wrap { flex: 1; margin: 0 10px; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+  .macro-bar-fill { height: 100%; border-radius: 2px; }
+  .macro-amt { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--snow); }
+
+  .meal-list { padding: 0 16px; }
+  .meal-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .meal-item:hover {
+    border-color: var(--amber-dim);
+    transform: translateX(3px);
+  }
+  .meal-emoji { font-size: 28px; }
+  .meal-info { flex: 1; }
+  .meal-name { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+  .meal-sub { font-size: 11px; color: var(--muted); }
+  .meal-cals {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--amber);
+    letter-spacing: 1px;
+  }
+  .meal-cal-label { font-size: 9px; color: var(--muted); text-align: right; }
+
+  .add-meal-btn {
+    margin: 12px 16px 0;
+    background: var(--surface2);
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .add-meal-btn:hover { border-color: var(--amber-dim); color: var(--amber); }
+
+  /* =================== SCREEN: PROGRESS =================== */
+  .progress-hero {
+    margin: 0 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px;
+  }
+  .progress-weight-display {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .prog-current {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    color: var(--amber);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .prog-unit { font-size: 20px; color: var(--muted); margin-bottom: 8px; }
+  .prog-change {
+    font-size: 13px;
+    color: var(--green);
+    margin-bottom: 16px;
+    font-family: 'DM Mono', monospace;
+  }
+  .weight-chart-area {
+    height: 80px;
+    position: relative;
+  }
+
+  .body-comp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0 16px 20px;
+  }
+  .comp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .comp-icon { font-size: 20px; margin-bottom: 8px; }
+  .comp-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    color: var(--snow);
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .comp-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .comp-trend { font-size: 10px; font-family: 'DM Mono', monospace; margin-top: 4px; }
+  .comp-trend.good { color: var(--green); }
+  .comp-trend.bad { color: #e05a5a; }
+
+  /* =================== SCREEN: PROFILE =================== */
+  .profile-hero {
+    margin: 0 16px 24px;
+    background: linear-gradient(135deg, #1a1400 0%, #111 100%);
+    border: 1px solid var(--amber-dim);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-avatar-wrap {
+    width: 80px; height: 80px;
+    margin: 0 auto 14px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--amber-dim), var(--amber));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--black);
+    position: relative;
+  }
+  .profile-verified {
+    position: absolute;
+    bottom: -4px; right: -4px;
+    width: 22px; height: 22px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    border: 2px solid var(--black);
+  }
+  .profile-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .profile-tier {
+    display: inline-block;
+    background: var(--amber-glow);
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 11px;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .profile-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .profile-stat {
+    background: var(--surface2);
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .profile-stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--snow);
+    letter-spacing: 1px;
+  }
+  .profile-stat-label {
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 2px;
+  }
+
+  .settings-list { padding: 0 16px; }
+  .settings-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .settings-item:hover { border-color: var(--amber-dim); }
+  .settings-icon {
+    width: 38px; height: 38px;
+    background: var(--surface2);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .settings-text { flex: 1; }
+  .settings-name { font-size: 14px; font-weight: 500; }
+  .settings-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .settings-arrow { color: var(--muted); font-size: 16px; }
+
+  /* WITHINGS CONNECT BANNER */
+  .withings-connect {
+    margin: 0 16px 16px;
+    background: linear-gradient(135deg, #001a0a 0%, #0a1400 100%);
+    border: 1px solid rgba(76,175,114,0.3);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+  }
+  .withings-connect-icon { font-size: 28px; }
+  .withings-connect-text { flex: 1; }
+  .withings-connect-title { font-size: 14px; font-weight: 600; color: var(--green); }
+  .withings-connect-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .withings-connect-btn {
+    background: var(--green);
+    color: var(--black);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 7px 12px;
+    border-radius: 8px;
+  }
+
+  /* =================== ONBOARDING =================== */
+  .onboard-screen {
+    min-height: 100vh;
+    background: var(--black);
+    display: none;
+    flex-direction: column;
+    padding: 0 0 40px;
+  }
+  .onboard-screen.active { display: flex; }
+
+  .onboard-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+  }
+  .onboard-bg-text {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 120px;
+    color: rgba(245,166,35,0.04);
+    letter-spacing: 8px;
+    pointer-events: none;
+    user-select: none;
+  }
+  .onboard-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 4px;
+    color: var(--amber);
+    margin-bottom: 4px;
+    position: relative;
+  }
+  .onboard-logo-sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .onboard-tagline {
+    font-size: 16px;
+    color: var(--snow);
+    line-height: 1.6;
+    max-width: 280px;
+    position: relative;
+  }
+  .onboard-tagline strong { color: var(--amber); font-weight: 600; }
+
+  .onboard-actions {
+    padding: 0 24px;
+  }
+  .btn-primary {
+    width: 100%;
+    background: var(--amber);
+    color: var(--black);
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 12px;
+  }
+  .btn-primary:hover {
+    background: #f5b840;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(245,166,35,0.3);
+  }
+  .btn-secondary {
+    width: 100%;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { color: var(--snow); border-color: var(--muted); }
+
+  /* MOUNTAIN DECORATION */
+  .mountain-deco {
+    width: 200px; height: 80px;
+    margin: 0 auto 30px;
+    position: relative;
+  }
+  .mountain-svg { width: 100%; height: 100%; }
+
+  /* STREAK BADGE */
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+
+  /* WEEK STRIP */
+  .week-strip {
+    display: flex;
+    gap: 6px;
+    margin: 0 16px 20px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .week-strip::-webkit-scrollbar { display: none; }
+  .day-pill {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    min-width: 50px;
+  }
+  .day-pill.active {
+    background: var(--amber);
+    border-color: var(--amber);
+  }
+  .day-pill.active .day-name, .day-pill.active .day-num { color: var(--black); }
+  .day-name { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .day-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--snow); }
+  .day-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+  .day-dot.empty { background: var(--border); }
+</style>
+</head>
+<body>
+<div class="phone-shell">
+
+  <!-- =================== ONBOARDING =================== -->
+  <div class="screen onboard-screen active" id="screen-onboard">
+    <div class="onboard-hero">
+      <div class="onboard-bg-text">MAX</div>
+      <div class="mountain-deco">
+        <svg class="mountain-svg" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Back mountain -->
+          <path d="M30 75 L80 20 L130 75Z" fill="#1a1400" stroke="rgba(245,166,35,0.2)" stroke-width="1"/>
+          <!-- Snow cap back -->
+          <path d="M80 20 L92 38 L68 38Z" fill="rgba(245,166,35,0.15)"/>
+          <!-- Main mountain -->
+          <path d="M60 75 L120 5 L180 75Z" fill="#221900" stroke="rgba(245,166,35,0.4)" stroke-width="1.5"/>
+          <!-- Snow cap main -->
+          <path d="M120 5 L138 32 L102 32Z" fill="rgba(245,166,35,0.3)"/>
+          <!-- Ridge glow -->
+          <line x1="60" y1="75" x2="120" y2="5" stroke="rgba(245,166,35,0.6)" stroke-width="1.5"/>
+          <line x1="120" y1="5" x2="180" y2="75" stroke="rgba(245,166,35,0.2)" stroke-width="1"/>
+          <!-- Stars -->
+          <circle cx="20" cy="15" r="1.5" fill="rgba(245,166,35,0.4)"/>
+          <circle cx="160" cy="10" r="1" fill="rgba(245,166,35,0.3)"/>
+          <circle cx="185" cy="25" r="1.5" fill="rgba(245,166,35,0.4)"/>
+          <circle cx="10" cy="40" r="1" fill="rgba(245,166,35,0.2)"/>
+        </svg>
+      </div>
+      <div class="onboard-logo">MAXIMAL</div>
+      <div class="onboard-logo-sub">PERFORMANCE</div>
+      <p class="onboard-tagline">Built for athletes who eat the <strong>same foods, adjusted portions</strong> — and track everything.</p>
+    </div>
+    <div class="onboard-actions">
+      <button class="btn-primary" onclick="goTo('screen-dashboard')">GET STARTED</button>
+      <button class="btn-secondary" onclick="goTo('screen-dashboard')">I already have an account</button>
+    </div>
+  </div>
+
+  <!-- =================== DASHBOARD =================== -->
+  <div class="screen" id="screen-dashboard">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>⬛⬛⬛ 100%</span>
+    </div>
+
+    <div class="scroll-content">
+      <!-- Hero -->
+      <div class="hero-banner">
+        <div class="hero-greeting">Good Morning</div>
+        <div class="hero-name">MAX SMALL</div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-val">Week <span style="color:var(--snow)">4</span></div>
+            <div class="hero-stat-label">of 12</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-val">87<span style="font-size:16px;color:var(--muted)">%</span></div>
+            <div class="hero-stat-label">Adherence</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-val">🔥 14</div>
+            <div class="hero-stat-label">Day streak</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Week strip -->
+      <div class="week-strip">
+        <div class="day-pill">
+          <div class="day-name">MON</div>
+          <div class="day-num">31</div>
+          <div class="day-dot"></div>
+        </div>
+        <div class="day-pill">
+          <div class="day-name">TUE</div>
+          <div class="day-num">1</div>
+          <div class="day-dot"></div>
+        </div>
+        <div class="day-pill">
+          <div class="day-name">WED</div>
+          <div class="day-num">2</div>
+          <div class="day-dot"></div>
+        </div>
+        <div class="day-pill active">
+          <div class="day-name">THU</div>
+          <div class="day-num">3</div>
+          <div class="day-dot"></div>
+        </div>
+        <div class="day-pill">
+          <div class="day-name">FRI</div>
+          <div class="day-num">4</div>
+          <div class="day-dot empty"></div>
+        </div>
+        <div class="day-pill">
+          <div class="day-name">SAT</div>
+          <div class="day-num">5</div>
+          <div class="day-dot empty"></div>
+        </div>
+        <div class="day-pill">
+          <div class="day-name">SUN</div>
+          <div class="day-num">6</div>
+          <div class="day-dot empty"></div>
+        </div>
+      </div>
+
+      <!-- Withings Live Data -->
+      <div class="section-header">
+        <div class="section-title">BODY METRICS</div>
+        <div class="section-link" onclick="goTo('screen-progress')">View history →</div>
+      </div>
+      <div class="withings-card">
+        <div class="withings-header">
+          <div class="withings-brand">
+            <div class="withings-dot"></div>
+            <div class="withings-label">Withings Live</div>
+          </div>
+          <div class="withings-sync">Synced 6:14am</div>
+        </div>
+        <div class="metrics-row">
+          <div class="metric-box">
+            <div class="metric-val">91<span class="metric-unit">kg</span></div>
+            <div class="metric-label">Weight</div>
+            <div class="metric-change down">▼ 0.4kg</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-val">16.2<span class="metric-unit">%</span></div>
+            <div class="metric-label">Body Fat</div>
+            <div class="metric-change down">▼ 0.3%</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-val">76.3<span class="metric-unit">kg</span></div>
+            <div class="metric-label">Lean Mass</div>
+            <div class="metric-change up">▲ 0.1kg</div>
+          </div>
+        </div>
+        <div class="mini-chart">
+          <svg class="chart-svg" viewBox="0 0 358 48" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(245,166,35,0.3)"/>
+                <stop offset="100%" stop-color="rgba(245,166,35,0)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,38 C30,36 60,40 90,34 C120,28 150,30 180,26 C210,22 240,28 270,22 C300,18 330,20 358,18" 
+                  fill="none" stroke="var(--amber)" stroke-width="1.5"/>
+            <path d="M0,38 C30,36 60,40 90,34 C120,28 150,30 180,26 C210,22 240,28 270,22 C300,18 330,20 358,18 L358,48 L0,48Z" 
+                  fill="url(#chartGrad)"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Today's meal plan -->
+      <div class="section-header">
+        <div class="section-title">TODAY'S PLAN</div>
+        <div class="section-link" onclick="goTo('screen-nutrition')">Full plan →</div>
+      </div>
+      <div class="plan-card" onclick="goTo('screen-nutrition')">
+        <div class="plan-card-inner">
+          <div class="plan-tag">🍽 Nutrition Day 4</div>
+          <div class="plan-title">HIGH PROTEIN — MAINTENANCE</div>
+          <div class="plan-meta">
+            <span>3,100 kcal target</span>
+            <span>·</span>
+            <span>220g protein</span>
+          </div>
+          <div class="plan-progress-bar">
+            <div class="plan-progress-fill" style="width: 62%"></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:'DM Mono',monospace;">1,920 / 3,100 kcal logged</div>
+        </div>
+      </div>
+
+      <!-- Check-in CTA -->
+      <div style="margin:0 16px 20px;background:linear-gradient(135deg,#001a0a,#0a1400);border:1px solid rgba(76,175,114,0.3);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="goTo('screen-checkin')">
+        <div style="font-size:28px;">📋</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:var(--green);">Week 4 Check-In Due</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Takes 2 mins · Updates your plan</div>
+        </div>
+        <div style="background:var(--green);color:var(--black);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:7px 12px;border-radius:8px;">START</div>
+      </div>
+
+      <!-- Coach message -->
+      <div class="section-header" style="margin-top:8px">
+        <div class="section-title">COACH</div>
+      </div>
+      <div class="coach-card">
+        <div class="coach-avatar">M</div>
+        <div>
+          <div class="coach-msg-name">Max Small · Coach</div>
+          <div class="coach-msg-text">Scale's down 0.4kg this week — progress is real. Don't drop calories yet, keep hitting the protein target and let the process work.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="goTo('screen-dashboard')">
+        <div class="nav-icon">🏠</div>
+        <div class="nav-label">Home</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-nutrition')">
+        <div class="nav-icon">🍽</div>
+        <div class="nav-label">Nutrition</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-progress')">
+        <div class="nav-icon">📈</div>
+        <div class="nav-label">Progress</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-profile')">
+        <div class="nav-icon">👤</div>
+        <div class="nav-label">Profile</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== NUTRITION =================== -->
+  <div class="screen" id="screen-nutrition">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>⬛⬛⬛ 100%</span>
+    </div>
+    <div class="top-nav">
+      <div class="back-btn" onclick="goTo('screen-dashboard')">←</div>
+      <div class="nav-title">NUTRITION</div>
+      <div class="nav-action">+</div>
+    </div>
+
+    <div class="scroll-content">
+      <!-- Macros ring -->
+      <div class="macro-ring-section">
+        <div class="ring-container">
+          <svg class="ring-svg" width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--surface3)" stroke-width="10"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--amber)" stroke-width="10"
+              stroke-dasharray="251.2" stroke-dashoffset="95" stroke-linecap="round"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-cals">1920</div>
+            <div class="ring-label">kcal</div>
+          </div>
+        </div>
+        <div class="macro-details">
+          <div class="macro-row">
+            <div class="macro-name">Protein</div>
+            <div class="macro-bar-wrap"><div class="macro-bar-fill" style="width:72%;background:#4caf72;"></div></div>
+            <div class="macro-amt">158g</div>
+          </div>
+          <div class="macro-row">
+            <div class="macro-name">Carbs</div>
+            <div class="macro-bar-wrap"><div class="macro-bar-fill" style="width:55%;background:var(--amber);"></div></div>
+            <div class="macro-amt">192g</div>
+          </div>
+          <div class="macro-row" style="margin-bottom:0">
+            <div class="macro-name">Fat</div>
+            <div class="macro-bar-wrap"><div class="macro-bar-fill" style="width:48%;background:var(--blue);"></div></div>
+            <div class="macro-amt">52g</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">TODAY'S MEALS</div>
+        <div class="section-link" onclick="goTo('screen-library')">Recipe library →</div>
+      </div>
+
+      <div class="meal-list">
+        <div class="meal-item">
+          <div class="meal-emoji">🥣</div>
+          <div class="meal-info">
+            <div class="meal-name">Breakfast</div>
+            <div class="meal-sub">Oats · Eggs · Banana</div>
+          </div>
+          <div>
+            <div class="meal-cals">620</div>
+            <div class="meal-cal-label">kcal</div>
+          </div>
+        </div>
+        <div class="meal-item">
+          <div class="meal-emoji">🍗</div>
+          <div class="meal-info">
+            <div class="meal-name">Lunch</div>
+            <div class="meal-sub">Chicken Rice Bowl · Broccoli</div>
+          </div>
+          <div>
+            <div class="meal-cals">780</div>
+            <div class="meal-cal-label">kcal</div>
+          </div>
+        </div>
+        <div class="meal-item" onclick="goTo('screen-recipe')" style="border-color:rgba(245,166,35,0.2);">
+          <div class="meal-emoji">🥤</div>
+          <div class="meal-info">
+            <div class="meal-name">Post-Workout</div>
+            <div class="meal-sub">High-Calorie Smoothie · <span style="color:var(--amber)">Customise →</span></div>
+          </div>
+          <div>
+            <div class="meal-cals">520</div>
+            <div class="meal-cal-label">kcal</div>
+          </div>
+        </div>
+        <div class="meal-item" style="opacity:0.5">
+          <div class="meal-emoji">🥩</div>
+          <div class="meal-info">
+            <div class="meal-name">Dinner</div>
+            <div class="meal-sub">Steak · Sweet Potato · Greens</div>
+          </div>
+          <div>
+            <div class="meal-cals">860</div>
+            <div class="meal-cal-label">kcal</div>
+          </div>
+        </div>
+        <div class="meal-item" style="opacity:0.5">
+          <div class="meal-emoji">🧀</div>
+          <div class="meal-info">
+            <div class="meal-name">Evening Snack</div>
+            <div class="meal-sub">Cottage Cheese · Almonds</div>
+          </div>
+          <div>
+            <div class="meal-cals">320</div>
+            <div class="meal-cal-label">kcal</div>
+          </div>
+        </div>
+      </div>
+      <div class="add-meal-btn">+ Log additional food</div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('screen-dashboard')">
+        <div class="nav-icon">🏠</div><div class="nav-label">Home</div>
+      </div>
+      <div class="nav-item active" onclick="goTo('screen-nutrition')">
+        <div class="nav-icon">🍽</div><div class="nav-label">Nutrition</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-progress')">
+        <div class="nav-icon">📈</div><div class="nav-label">Progress</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-profile')">
+        <div class="nav-icon">👤</div><div class="nav-label">Profile</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== PROGRESS =================== -->
+  <div class="screen" id="screen-progress">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>⬛⬛⬛ 100%</span>
+    </div>
+    <div class="top-nav">
+      <div class="back-btn" onclick="goTo('screen-dashboard')">←</div>
+      <div class="nav-title">PROGRESS</div>
+      <div class="nav-action">⚙</div>
+    </div>
+
+    <div class="scroll-content">
+      <div class="progress-hero">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-family:'DM Mono',monospace;">Current Weight</div>
+        <div class="progress-weight-display">
+          <div class="prog-current">91.0</div>
+          <div class="prog-unit">kg</div>
+        </div>
+        <div class="prog-change">▼ 4.0kg since start · 4 weeks</div>
+        <div class="weight-chart-area">
+          <svg width="100%" height="80" viewBox="0 0 358 80" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="progGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(245,166,35,0.25)"/>
+                <stop offset="100%" stop-color="rgba(245,166,35,0)"/>
+              </linearGradient>
+            </defs>
+            <!-- Grid lines -->
+            <line x1="0" y1="20" x2="358" y2="20" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4,4"/>
+            <line x1="0" y1="50" x2="358" y2="50" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4,4"/>
+            <!-- Weight line -->
+            <path d="M0,15 C40,18 80,20 120,28 C160,36 200,40 240,48 C280,56 320,60 358,64"
+                  fill="none" stroke="var(--amber)" stroke-width="2"/>
+            <path d="M0,15 C40,18 80,20 120,28 C160,36 200,40 240,48 C280,56 320,60 358,64 L358,80 L0,80Z"
+                  fill="url(#progGrad)"/>
+            <!-- Data points -->
+            <circle cx="0" cy="15" r="4" fill="var(--amber)"/>
+            <circle cx="89" cy="25" r="4" fill="var(--amber)"/>
+            <circle cx="179" cy="38" r="4" fill="var(--amber)"/>
+            <circle cx="268" cy="52" r="4" fill="var(--amber)"/>
+            <circle cx="358" cy="64" r="4" fill="var(--amber)" stroke="var(--black)" stroke-width="2"/>
+          </svg>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:4px;">
+          <span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span><span>Now</span>
+        </div>
+      </div>
+
+      <div style="padding:0 16px;margin-bottom:12px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;margin-bottom:12px;">BODY COMPOSITION</div>
+      </div>
+      <div class="body-comp-grid">
+        <div class="comp-card">
+          <div class="comp-icon">💪</div>
+          <div class="comp-val">76.3<span style="font-size:14px;color:var(--muted)">kg</span></div>
+          <div class="comp-label">Lean Mass</div>
+          <div class="comp-trend good">▲ +0.6kg total</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-icon">🔥</div>
+          <div class="comp-val">16.2<span style="font-size:14px;color:var(--muted)">%</span></div>
+          <div class="comp-label">Body Fat</div>
+          <div class="comp-trend good">▼ -1.8% total</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-icon">💧</div>
+          <div class="comp-val">58.4<span style="font-size:14px;color:var(--muted)">%</span></div>
+          <div class="comp-label">Hydration</div>
+          <div class="comp-trend good">↗ Optimal</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-icon">🦴</div>
+          <div class="comp-val">3.8<span style="font-size:14px;color:var(--muted)">kg</span></div>
+          <div class="comp-label">Bone Mass</div>
+          <div class="comp-trend good">— Stable</div>
+        </div>
+      </div>
+
+      <div class="withings-connect" style="margin-top:8px">
+        <div class="withings-connect-icon">⚖️</div>
+        <div class="withings-connect-text">
+          <div class="withings-connect-title">Withings Scale Connected</div>
+          <div class="withings-connect-sub">Auto-syncing body metrics daily</div>
+        </div>
+        <div class="withings-connect-btn">LIVE</div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('screen-dashboard')">
+        <div class="nav-icon">🏠</div><div class="nav-label">Home</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-nutrition')">
+        <div class="nav-icon">🍽</div><div class="nav-label">Nutrition</div>
+      </div>
+      <div class="nav-item active" onclick="goTo('screen-progress')">
+        <div class="nav-icon">📈</div><div class="nav-label">Progress</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-profile')">
+        <div class="nav-icon">👤</div><div class="nav-label">Profile</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== PROFILE =================== -->
+  <div class="screen" id="screen-profile">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>⬛⬛⬛ 100%</span>
+    </div>
+    <div class="top-nav">
+      <div style="width:36px"></div>
+      <div class="nav-title">PROFILE</div>
+      <div class="nav-action">✏</div>
+    </div>
+
+    <div class="scroll-content">
+      <div class="profile-hero">
+        <div class="profile-avatar-wrap">
+          M
+          <div class="profile-verified">✓</div>
+        </div>
+        <div class="profile-name">MAX SMALL</div>
+        <div class="profile-tier">Premium Coaching</div>
+        <div class="profile-stats-row">
+          <div class="profile-stat">
+            <div class="profile-stat-val">95kg</div>
+            <div class="profile-stat-label">Goal</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-val">Wk 4</div>
+            <div class="profile-stat-label">Progress</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-val">🔥14</div>
+            <div class="profile-stat-label">Streak</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="withings-connect">
+        <div class="withings-connect-icon">⚖️</div>
+        <div class="withings-connect-text">
+          <div class="withings-connect-title">Withings Connected</div>
+          <div class="withings-connect-sub">Body+ Scale · Syncing daily</div>
+        </div>
+        <div class="withings-connect-btn">ACTIVE</div>
+      </div>
+
+      <div class="settings-list">
+        <div class="settings-item">
+          <div class="settings-icon">🎯</div>
+          <div class="settings-text">
+            <div class="settings-name">My Goals</div>
+            <div class="settings-sub">Mass building · 95kg target</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-icon">🍽</div>
+          <div class="settings-text">
+            <div class="settings-name">Meal Plan Settings</div>
+            <div class="settings-sub">Same foods · Portions adjusted</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-icon">📋</div>
+          <div class="settings-text">
+            <div class="settings-name">52 Recipe Meal Plan</div>
+            <div class="settings-sub">High-protein recipe library</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-icon">💬</div>
+          <div class="settings-text">
+            <div class="settings-name">Message Coach Max</div>
+            <div class="settings-sub">Direct access · 1-on-1 plan</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-icon">🔔</div>
+          <div class="settings-text">
+            <div class="settings-name">Notifications</div>
+            <div class="settings-sub">Meal reminders · Weigh-in alerts</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-icon">⚙️</div>
+          <div class="settings-text">
+            <div class="settings-name">Account Settings</div>
+            <div class="settings-sub">Plan · Billing · Units</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('screen-dashboard')">
+        <div class="nav-icon">🏠</div><div class="nav-label">Home</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-nutrition')">
+        <div class="nav-icon">🍽</div><div class="nav-label">Nutrition</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-progress')">
+        <div class="nav-icon">📈</div><div class="nav-label">Progress</div>
+      </div>
+      <div class="nav-item active" onclick="goTo('screen-profile')">
+        <div class="nav-icon">👤</div><div class="nav-label">Profile</div>
+      </div>
+    </div>
+  </div>
+
+
+<!-- =================== RECIPE LIBRARY =================== -->
+<div class="screen" id="screen-library">
+  <div class="status-bar"><span>9:41</span><span>⬛⬛⬛ 100%</span></div>
+  <div class="top-nav">
+    <div class="back-btn" onclick="goTo('screen-nutrition')">←</div>
+    <div class="nav-title">RECIPE LIBRARY</div>
+    <div style="width:36px"></div>
+  </div>
+  <div class="scroll-content">
+    <div style="padding:0 16px 12px;">
+      <div style="font-size:13px;color:var(--muted);">52 recipes loaded · <span style="color:var(--green);">✓ Complete library</span></div>
+    </div>
+
+    <!-- Filter tags -->
+    <div style="display:flex;gap:8px;padding:0 16px 16px;overflow-x:auto;">
+      <div class="filter-tag active" onclick="filterRecipes('all',this)">All 52</div>
+      <div class="filter-tag" onclick="filterRecipes('HP',this)">High Protein</div>
+      <div class="filter-tag" onclick="filterRecipes('GF',this)">Gluten Free</div>
+      <div class="filter-tag" onclick="filterRecipes('LC',this)">Low Carb</div>
+      <div class="filter-tag" onclick="filterRecipes('V',this)">Vegetarian</div>
+      <div class="filter-tag" onclick="filterRecipes('DF',this)">Dairy Free</div>
+      <div class="filter-tag" onclick="filterRecipes('MP',this)">Meal Prep</div>
+    </div>
+
+    <div id="library-grid" style="padding:0 16px;"></div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="goTo('screen-dashboard')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+    <div class="nav-item active" onclick="goTo('screen-nutrition')"><div class="nav-icon">🍽</div><div class="nav-label">Nutrition</div></div>
+    <div class="nav-item" onclick="goTo('screen-progress')"><div class="nav-icon">📈</div><div class="nav-label">Progress</div></div>
+    <div class="nav-item" onclick="goTo('screen-profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+  </div>
+</div>
+
+<!-- =================== CHECK-IN FORM =================== -->
+<div class="screen" id="screen-checkin">
+  <div class="status-bar"><span>9:41</span><span>⬛⬛⬛ 100%</span></div>
+  <div class="top-nav">
+    <div class="back-btn" onclick="goTo('screen-dashboard')">←</div>
+    <div class="nav-title">WEEKLY CHECK-IN</div>
+    <div style="width:36px"></div>
+  </div>
+  <div class="scroll-content">
+
+    <div style="margin:0 16px 20px;background:linear-gradient(135deg,#1a1400,#111);border:1px solid var(--amber-dim);border-radius:18px;padding:20px;">
+      <div style="font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:2px;font-weight:600;margin-bottom:6px;">Week 4 of 12</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:6px;">HOW'S THE WEEK BEEN?</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.5;">Your answers update your plan for next week. Takes 2 minutes.</div>
+    </div>
+
+    <!-- Withings auto-pull notice -->
+    <div style="margin:0 16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;">
+      <div style="font-size:22px;">⚖️</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--green);">Withings data auto-filled</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">Weight 91.0kg · Fat 16.2% · Synced 6:14am</div>
+      </div>
+    </div>
+
+    <!-- Section: Body -->
+    <div style="padding:0 16px;margin-bottom:6px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--amber);">BODY</div>
+    </div>
+
+    <div class="checkin-card">
+      <div class="checkin-label">How does your body feel this week?</div>
+      <div class="emoji-select" id="feel-select">
+        <div class="emoji-opt" onclick="selectOpt('feel-select',this)">😴<span>Drained</span></div>
+        <div class="emoji-opt" onclick="selectOpt('feel-select',this)">😐<span>Okay</span></div>
+        <div class="emoji-opt selected" onclick="selectOpt('feel-select',this)">💪<span>Strong</span></div>
+        <div class="emoji-opt" onclick="selectOpt('feel-select',this)">🔥<span>Fired up</span></div>
+      </div>
+    </div>
+
+    <div class="checkin-card">
+      <div class="checkin-label">Training sessions completed</div>
+      <div class="counter-row">
+        <div class="counter-btn" onclick="changeCount('sessions',-1)">−</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--amber);letter-spacing:2px;" id="sessions-val">4</div>
+        <div class="counter-btn" onclick="changeCount('sessions',1)">+</div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);text-align:center;">out of 5 planned</div>
+    </div>
+
+    <!-- Section: Nutrition -->
+    <div style="padding:0 16px;margin-bottom:6px;margin-top:8px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--amber);">NUTRITION</div>
+    </div>
+
+    <div class="checkin-card">
+      <div class="checkin-label">How well did you stick to the meal plan?</div>
+      <div class="slider-wrap">
+        <input type="range" min="0" max="100" value="80" class="checkin-slider" id="adherence-slider" oninput="updateSlider('adherence-slider','adherence-val','%')">
+        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+          <span style="font-size:10px;color:var(--muted);">Off track</span>
+          <span style="font-family:'Bebas Neue';font-size:22px;color:var(--amber);" id="adherence-val">80%</span>
+          <span style="font-size:10px;color:var(--muted);">Perfect</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="checkin-card">
+      <div class="checkin-label">Any cravings or struggles this week?</div>
+      <textarea class="checkin-textarea" placeholder="e.g. Found it hard to hit protein at dinner..."></textarea>
+    </div>
+
+    <!-- Section: Sleep & Recovery -->
+    <div style="padding:0 16px;margin-bottom:6px;margin-top:8px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--amber);">RECOVERY</div>
+    </div>
+
+    <div class="checkin-card">
+      <div class="checkin-label">Average sleep quality</div>
+      <div class="emoji-select" id="sleep-select">
+        <div class="emoji-opt" onclick="selectOpt('sleep-select',this)">😫<span>Poor</span></div>
+        <div class="emoji-opt selected" onclick="selectOpt('sleep-select',this)">😴<span>Okay</span></div>
+        <div class="emoji-opt" onclick="selectOpt('sleep-select',this)">😌<span>Good</span></div>
+        <div class="emoji-opt" onclick="selectOpt('sleep-select',this)">🌙<span>Great</span></div>
+      </div>
+    </div>
+
+    <div class="checkin-card">
+      <div class="checkin-label">Stress levels this week</div>
+      <div class="slider-wrap">
+        <input type="range" min="0" max="10" value="3" class="checkin-slider" id="stress-slider" oninput="updateSlider('stress-slider','stress-val','/10')">
+        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+          <span style="font-size:10px;color:var(--muted);">Zen</span>
+          <span style="font-family:'Bebas Neue';font-size:22px;color:var(--amber);" id="stress-val">3/10</span>
+          <span style="font-size:10px;color:var(--muted);">Maxed out</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Photo -->
+    <div style="padding:0 16px;margin-bottom:6px;margin-top:8px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--amber);">PROGRESS PHOTO</div>
+    </div>
+    <div style="margin:0 16px 20px;background:var(--surface);border:1px dashed var(--border);border-radius:16px;padding:32px;text-align:center;cursor:pointer;" onclick="this.style.borderColor='var(--amber)'">
+      <div style="font-size:32px;margin-bottom:10px;">📸</div>
+      <div style="font-size:13px;color:var(--muted);">Tap to upload front + side photo</div>
+      <div style="font-size:10px;color:var(--border);margin-top:6px;">Optional but recommended</div>
+    </div>
+
+    <!-- Submit -->
+    <div style="padding:0 16px 8px;">
+      <button class="btn-primary" onclick="submitCheckin()">SUBMIT CHECK-IN</button>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);padding-bottom:8px;">Coach Max reviews within 24hrs</div>
+
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="goTo('screen-dashboard')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+    <div class="nav-item" onclick="goTo('screen-nutrition')"><div class="nav-icon">🍽</div><div class="nav-label">Nutrition</div></div>
+    <div class="nav-item" onclick="goTo('screen-progress')"><div class="nav-icon">📈</div><div class="nav-label">Progress</div></div>
+    <div class="nav-item" onclick="goTo('screen-profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+  </div>
+</div>
+
+<!-- =================== RECIPE DETAIL + INGREDIENT CUSTOMISER =================== -->
+<div class="screen" id="screen-recipe">
+  <div class="status-bar"><span>9:41</span><span>⬛⬛⬛ 100%</span></div>
+  <div class="top-nav">
+    <div class="back-btn" onclick="goTo('screen-nutrition')">←</div>
+    <div class="nav-title">RECIPE</div>
+    <div class="nav-action">♥</div>
+  </div>
+  <div class="scroll-content">
+
+    <!-- Recipe hero -->
+    <div style="margin:0 16px 20px;background:linear-gradient(135deg,#1a1400,#111);border:1px solid var(--amber-dim);border-radius:20px;padding:24px 20px;">
+      <div style="font-size:48px;text-align:center;margin-bottom:12px;">🥤</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;text-align:center;margin-bottom:4px;">HIGH-CALORIE SMOOTHIE</div>
+      <div style="text-align:center;font-size:12px;color:var(--muted);margin-bottom:16px;">From your 52-recipe meal plan library</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--amber);" id="recipe-cals">520</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;">kcal</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);" id="recipe-protein">42</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;">protein</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--amber);" id="recipe-carbs">62</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;">carbs</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--blue);" id="recipe-fat">12</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;">fat</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calorie target adjuster -->
+    <div style="margin:0 16px 20px;background:var(--surface);border:1px solid var(--amber-dim);border-radius:16px;padding:16px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;"></div>
+        <div style="font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;font-family:'DM Mono',monospace;">Withings-Adjusted Target</div>
+      </div>
+      <div style="font-size:13px;color:var(--snow);margin-bottom:12px;">Your scale shows <strong style="color:var(--amber);">91.0kg</strong> this morning. Based on your goal of <strong style="color:var(--amber);">95kg</strong>, your target is <strong style="color:var(--amber);">3,100 kcal/day</strong>.</div>
+      <div class="slider-wrap">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Scale this recipe to your daily target:</div>
+        <input type="range" min="0.5" max="2" step="0.1" value="1" class="checkin-slider" id="scale-slider" oninput="scaleRecipe(this.value)">
+        <div style="display:flex;justify-content:space-between;margin-top:4px;">
+          <span style="font-size:10px;color:var(--muted);">0.5×</span>
+          <span style="font-family:'Bebas Neue';font-size:18px;color:var(--amber);" id="scale-val">1.0× (base)</span>
+          <span style="font-size:10px;color:var(--muted);">2×</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ingredients with swap -->
+    <div style="padding:0 16px;margin-bottom:12px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;margin-bottom:4px;">INGREDIENTS</div>
+      <div style="font-size:11px;color:var(--muted);">Tap any ingredient to swap it out</div>
+    </div>
+
+    <div id="ingredients-list" style="padding:0 16px;">
+      <!-- Ingredients rendered by JS -->
+    </div>
+
+    <!-- Method -->
+    <div style="padding:0 16px;margin:16px 0 12px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;margin-bottom:12px;">METHOD</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;" data-method>
+        <div class="method-step"><span class="step-num">1</span><span>Heat oil in a non-stick pan and sear potato and onion over medium-high heat for 4 minutes. Add zucchini, sauté 4 minutes.</span></div>
+        <div class="method-step"><span class="step-num">2</span><span>Whisk eggs and season. Transfer vegetables into egg bowl and mix well.</span></div>
+        <div class="method-step"><span class="step-num">3</span><span>Add egg mixture to pan on low heat. After 3 mins, loosen edges with spatula.</span></div>
+        <div class="method-step"><span class="step-num">4</span><span>After 8–10 minutes flip tortilla using a plate. Slide back into pan.</span></div>
+        <div class="method-step"><span class="step-num">5</span><span>Cook 5–6 more minutes. Remove from heat and serve.</span></div>
+      </div>
+    </div>
+
+    <!-- Coach note -->
+    <div style="margin:0 16px 20px;background:linear-gradient(135deg,var(--surface),#1a1400);border:1px solid rgba(245,166,35,0.2);border-radius:16px;padding:16px;display:flex;gap:12px;">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--amber-dim),var(--amber));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--black);flex-shrink:0;">M</div>
+      <div>
+        <div style="font-size:11px;color:var(--amber);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Coach Max</div>
+        <div style="font-size:12px;color:var(--snow);line-height:1.5;">This is your same-foods-adjusted-portions philosophy in action. Swap ingredients freely — just keep the protein anchor (whey or milk) to hit your daily target.</div>
+      </div>
+    </div>
+
+    <div style="padding:0 16px 8px;">
+      <button class="btn-primary" onclick="goTo('screen-nutrition')">ADD TO TODAY'S LOG</button>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="goTo('screen-dashboard')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+    <div class="nav-item active" onclick="goTo('screen-nutrition')"><div class="nav-icon">🍽</div><div class="nav-label">Nutrition</div></div>
+    <div class="nav-item" onclick="goTo('screen-progress')"><div class="nav-icon">📈</div><div class="nav-label">Progress</div></div>
+    <div class="nav-item" onclick="goTo('screen-profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+  </div>
+</div>
+
+<!-- =================== INGREDIENT SWAP MODAL =================== -->
+<div id="swap-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:flex-end;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:24px 24px 0 0;width:100%;max-width:390px;padding:24px 20px 40px;animation:fadeIn 0.2s ease;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;">SWAP INGREDIENT</div>
+      <div style="cursor:pointer;font-size:20px;color:var(--muted);" onclick="closeSwap()">✕</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;" id="swap-subtitle">Replacing: Whole Milk</div>
+    <div id="swap-options"></div>
+  </div>
+</div>
+
+<!-- =================== NOTIFICATION TOAST =================== -->
+<div id="notif-toast" style="display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:300;max-width:360px;width:calc(100% - 32px);">
+  <div style="background:var(--surface);border:1px solid var(--amber-dim);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
+    <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--amber-dim),var(--amber));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--black);flex-shrink:0;">M</div>
+    <div style="flex:1;">
+      <div style="font-size:11px;color:var(--amber);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Coach Max · Maximal Performance</div>
+      <div style="font-size:13px;color:var(--snow);line-height:1.4;" id="notif-text">Morning. Scale doesn't lie — you're 4kg down and lean mass is up. Stay the course today.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /phone-shell -->
+
+<style>
+/* CHECK-IN STYLES */
+.checkin-card {
+  margin: 0 16px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+}
+.checkin-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--snow);
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.emoji-select {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.emoji-opt {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 22px;
+}
+.emoji-opt span { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.emoji-opt.selected { background: var(--amber-glow); border-color: var(--amber); }
+.emoji-opt.selected span { color: var(--amber); }
+.counter-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 6px;
+}
+.counter-btn {
+  width: 44px; height: 44px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: var(--snow);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+.counter-btn:hover { background: var(--surface3); }
+.checkin-slider {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface3);
+  outline: none;
+}
+.checkin-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--amber);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(245,166,35,0.4);
+}
+.slider-wrap { width: 100%; }
+.checkin-textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  color: var(--snow);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  resize: none;
+  height: 80px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.checkin-textarea:focus { border-color: var(--amber-dim); }
+.checkin-textarea::placeholder { color: var(--muted); }
+
+.filter-tag {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.filter-tag.active {
+  background: var(--amber-glow);
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+/* RECIPE STYLES */
+.method-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--snow);
+  line-height: 1.5;
+}
+.method-step:last-child { margin-bottom: 0; }
+.step-num {
+  width: 24px; height: 24px;
+  background: var(--amber-glow);
+  border: 1px solid rgba(245,166,35,0.3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--amber);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.ingr-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.ingr-item:hover { border-color: var(--amber-dim); transform: translateX(2px); }
+.ingr-icon { font-size: 24px; width: 36px; text-align: center; }
+.ingr-info { flex: 1; }
+.ingr-name { font-size: 14px; font-weight: 500; }
+.ingr-qty { font-size: 11px; color: var(--amber); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.ingr-cals { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--muted); }
+.ingr-swap-hint { font-size: 10px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.8px; }
+
+.swap-opt {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.swap-opt:hover { border-color: var(--amber-dim); }
+.swap-opt-icon { font-size: 24px; }
+.swap-opt-name { font-size: 14px; font-weight: 500; flex: 1; }
+.swap-opt-diff { font-size: 11px; font-family: 'DM Mono', monospace; }
+.swap-opt-diff.pos { color: var(--amber); }
+.swap-opt-diff.neg { color: var(--green); }
+</style>
+
+<script>
+// ---- NAVIGATION ----
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) { target.classList.add('active'); window.scrollTo(0,0); }
+  if (id === 'screen-recipe') {
+    const r = recipeLibrary[activeRecipeIdx];
+    currentIngredients = r.ingredients.map(i => ({...i}));
+    currentScale = 1.0;
+    // Update recipe hero
+    const hero = document.querySelector('#screen-recipe .scroll-content > div:first-child');
+    if(hero) {
+      const spans = hero.querySelectorAll('div');
+      if(spans[0]) spans[0].textContent = r.emoji;
+      if(spans[1]) spans[1].textContent = r.name.toUpperCase();
+    }
+    document.getElementById('recipe-cals').textContent = r.kcal;
+    document.getElementById('recipe-protein').textContent = r.protein + 'g';
+    document.getElementById('recipe-carbs').textContent = r.carbs + 'g';
+    document.getElementById('recipe-fat').textContent = r.fat + 'g';
+    // Update method steps
+    const methodDiv = document.querySelector('#screen-recipe .scroll-content [data-method]');
+    if(methodDiv) methodDiv.innerHTML = r.steps.map((s,i) => `<div class="method-step"><span class="step-num">${i+1}</span><span>${s}</span></div>`).join('');
+    renderIngredients();
+  }
+}
+
+// ---- CHECK-IN ----
+function selectOpt(groupId, el) {
+  document.querySelectorAll('#'+groupId+' .emoji-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+const counts = { sessions: 4 };
+function changeCount(key, delta) {
+  counts[key] = Math.max(0, Math.min(7, counts[key] + delta));
+  document.getElementById(key+'-val').textContent = counts[key];
+}
+function updateSlider(sliderId, valId, suffix) {
+  const v = document.getElementById(sliderId).value;
+  document.getElementById(valId).textContent = v + suffix;
+}
+function submitCheckin() {
+  alert('Check-in submitted! Coach Max will review within 24 hours and update your plan.');
+  goTo('screen-dashboard');
+}
+
+// ---- RECIPE LIBRARY — ALL 52 RECIPES ----
+const recipeLibrary = [
+  { id:0, emoji:'🍳', name:'Spanish Zucchini Tortilla', kcal:377, protein:21, carbs:22, fat:22, serves:2, tags:['GF','V'], prepTime:'10 mins', cookTime:'25 mins',
+    ingredients:[
+      {icon:'🫒',name:'Olive oil',qty:1,unit:'tbsp',cals:119,protein:0,carbs:0,fat:14,swaps:[{icon:'🥥',name:'Coconut oil',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🥔',name:'Small potato',qty:1,unit:'',cals:77,protein:2,carbs:17,fat:0,swaps:[{icon:'🍠',name:'Sweet potato',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🧅',name:'Small onion',qty:1,unit:'',cals:44,protein:1,carbs:10,fat:0,swaps:[{icon:'🧄',name:'Shallots',diff:'-10 kcal',diffClass:'neg'}]},
+      {icon:'🥒',name:'Zucchini',qty:0.5,unit:'small',cals:17,protein:1,carbs:3,fat:0,swaps:[{icon:'🫑',name:'Capsicum',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🥚',name:'Eggs',qty:6,unit:'',cals:430,protein:36,carbs:2,fat:28,swaps:[{icon:'🥚',name:'Egg whites only',diff:'-200 kcal',diffClass:'neg'}]},
+    ],
+    steps:['Heat oil in a non-stick pan and sear potato and onion over medium-high heat for 4 minutes. Add zucchini, sauté 4 minutes.','Whisk eggs and season. Transfer vegetables into the egg bowl and mix well.','Add egg mixture to pan on low heat. After 3 mins, loosen edges with spatula.','After 8–10 minutes flip tortilla using a plate. Slide back into pan.','Cook 5–6 more minutes. Remove from heat and serve.']
+  },
+  { id:1, emoji:'🌯', name:'Omelet Wraps', kcal:237, protein:20, carbs:3, fat:15, serves:4, tags:['GF','DF','LC'], prepTime:'15 mins', cookTime:'10 mins',
+    ingredients:[
+      {icon:'🧀',name:'Cottage cheese',qty:200,unit:'g',cals:160,protein:20,carbs:6,fat:4,swaps:[{icon:'🫙',name:'Ricotta',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🌿',name:'Watercress',qty:4,unit:'handfuls',cals:16,protein:3,carbs:1,fat:0,swaps:[{icon:'🥬',name:'Spinach',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🥚',name:'Eggs',qty:6,unit:'',cals:430,protein:36,carbs:2,fat:28,swaps:[{icon:'🥚',name:'Egg whites',diff:'-200 kcal',diffClass:'neg'}]},
+      {icon:'🥛',name:'Soy milk',qty:60,unit:'ml',cals:26,protein:2,carbs:2,fat:1,swaps:[{icon:'🌾',name:'Oat milk',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🐟',name:'Smoked salmon',qty:100,unit:'g',cals:130,protein:20,carbs:0,fat:5,swaps:[{icon:'🦐',name:'Smoked trout',diff:'±0 kcal',diffClass:'neg'}]},
+    ],
+    steps:['Blend cottage cheese, watercress and lemon peel until smooth paste.','Beat eggs with milk and herbs.','Fry ¼ of egg mixture per omelet in coconut oil, 2 mins each side.','Repeat for all 4 omelets.','Spread cottage cheese paste, top with salmon, roll and cut in half.']
+  },
+  { id:2, emoji:'🫑', name:'Egg & Turkey Stuffed Peppers', kcal:329, protein:43, carbs:11, fat:12, serves:4, tags:['GF','LC','HP'], prepTime:'5 mins', cookTime:'20 mins',
+    ingredients:[
+      {icon:'🥚',name:'Eggs + egg whites',qty:8,unit:'',cals:280,protein:24,carbs:2,fat:16,swaps:[{icon:'🥚',name:'Whole eggs only',diff:'+80 kcal',diffClass:'pos'}]},
+      {icon:'🦃',name:'Lean ground turkey',qty:450,unit:'g',cals:594,protein:80,carbs:0,fat:28,swaps:[{icon:'🐔',name:'Lean ground chicken',diff:'±0 kcal',diffClass:'neg'},{icon:'🥩',name:'Lean beef mince',diff:'+40 kcal',diffClass:'pos'}]},
+      {icon:'🫑',name:'Bell peppers',qty:4,unit:'',cals:100,protein:4,carbs:24,fat:0,swaps:[{icon:'🍅',name:'Large tomatoes',diff:'-20 kcal',diffClass:'neg'}]},
+      {icon:'🧀',name:'Cheese',qty:50,unit:'g',cals:180,protein:12,carbs:1,fat:14,swaps:[{icon:'🧀',name:'Low-fat cheese',diff:'-60 kcal',diffClass:'neg'}]},
+      {icon:'🥬',name:'Spinach',qty:60,unit:'g',cals:14,protein:2,carbs:2,fat:0,swaps:[{icon:'🥦',name:'Broccoli',diff:'+10 kcal',diffClass:'pos'}]},
+    ],
+    steps:['Heat oven to 200°C.','Beat eggs, egg whites and milk. Set aside.','Cook onion in oil 3 mins. Add turkey, oregano, cumin. Cook 5 mins. Add spinach.','Increase heat, add eggs. Scramble for 3 mins.','Cut peppers in half, remove seeds, stuff with turkey-egg mix. Top with cheese.','Bake 15 mins until cheese is melted and edges browned. Serve with parsley.']
+  },
+  { id:3, emoji:'🐟', name:'Smoked Salmon, Feta & Asparagus Omelet', kcal:302, protein:20, carbs:6, fat:21, serves:2, tags:['GF','LC'], prepTime:'10 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🥦',name:'Asparagus',qty:125,unit:'g',cals:25,protein:3,carbs:5,fat:0,swaps:[{icon:'🥦',name:'Broccolini',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🥚',name:'Eggs',qty:3,unit:'large',cals:215,protein:18,carbs:1,fat:14,swaps:[{icon:'🥚',name:'4 egg whites + 1 yolk',diff:'-80 kcal',diffClass:'neg'}]},
+      {icon:'🐟',name:'Smoked salmon',qty:60,unit:'g',cals:78,protein:12,carbs:0,fat:3,swaps:[{icon:'🐟',name:'Smoked trout',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🧀',name:'Feta cheese',qty:30,unit:'g',cals:79,protein:5,carbs:1,fat:6,swaps:[{icon:'🧀',name:'Brie or camembert',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🍅',name:'Cherry tomatoes',qty:5,unit:'',cals:17,protein:1,carbs:4,fat:0,swaps:[{icon:'🫑',name:'Roasted capsicum',diff:'+5 kcal',diffClass:'pos'}]},
+    ],
+    steps:['Prep asparagus, boil 2 mins in salted water. Drain and set aside.','Whisk eggs with milk, salt and pepper. Add asparagus, salmon and feta.','Heat oven to 180°C. Heat oil in 24cm pan. Pour in egg mixture.','Top with halved cherry tomatoes. Cover and cook 5 mins until set.','Transfer to oven uncovered, cook 6–10 mins more. Serve with fresh dill.']
+  },
+  { id:4, emoji:'🥞', name:'High Protein Blueberry Pancakes', kcal:257, protein:36, carbs:18, fat:5, serves:1, tags:['GF','HP','V'], prepTime:'5 mins', cookTime:'10 mins',
+    ingredients:[
+      {icon:'🥚',name:'Liquid egg whites',qty:60,unit:'ml',cals:30,protein:6,carbs:0,fat:0,swaps:[{icon:'🥚',name:'2 whole eggs',diff:'+100 kcal',diffClass:'pos'}]},
+      {icon:'🫙',name:'Vanilla whey powder',qty:25,unit:'g',cals:100,protein:20,carbs:3,fat:1,swaps:[{icon:'🌿',name:'Plant protein',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍌',name:'Banana, mashed',qty:0.5,unit:'',cals:52,protein:1,carbs:13,fat:0,swaps:[{icon:'🍎',name:'Unsweetened applesauce',diff:'-20 kcal',diffClass:'neg'}]},
+      {icon:'🫐',name:'Blueberries',qty:25,unit:'g',cals:14,protein:0,carbs:4,fat:0,swaps:[{icon:'🍓',name:'Raspberries',diff:'-4 kcal',diffClass:'neg'}]},
+      {icon:'🥥',name:'Coconut oil',qty:0.5,unit:'tsp',cals:20,protein:0,carbs:0,fat:2,swaps:[{icon:'🍳',name:'Cooking spray',diff:'-18 kcal',diffClass:'neg'}]},
+    ],
+    steps:['Whisk egg whites and protein powder together.','Stir in mashed banana and blueberries. Add a splash of almond milk if too thick.','Heat coconut oil on low-medium. Pour in batter, cook until bubbles form (~5 mins).','Flip once set. Cook 2–3 more mins.','Serve with your favourite toppings.']
+  },
+  { id:5, emoji:'🍳', name:'Eggs Fried on Tomatoes With Tuna', kcal:307, protein:32, carbs:8, fat:15, serves:1, tags:['GF','DF','LC','HP'], prepTime:'5 mins', cookTime:'5 mins',
+    ingredients:[
+      {icon:'🍅',name:'Large tomato',qty:1,unit:'',cals:33,protein:2,carbs:7,fat:0,swaps:[{icon:'🍅',name:'Cherry tomatoes',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🥚',name:'Eggs',qty:2,unit:'',cals:143,protein:12,carbs:1,fat:9,swaps:[{icon:'🥚',name:'3 egg whites',diff:'-80 kcal',diffClass:'neg'}]},
+      {icon:'🐟',name:'Tuna in brine',qty:80,unit:'g',cals:72,protein:16,carbs:0,fat:1,swaps:[{icon:'🧀',name:'Feta cheese',diff:'+50 kcal',diffClass:'pos'},{icon:'🐟',name:'Sardines',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🌿',name:'Oregano + chili flakes',qty:1,unit:'pinch',cals:2,protein:0,carbs:0,fat:0,swaps:[]},
+    ],
+    steps:['Peel tomato and chop into cubes.','Heat oil in pan, fry tomato on high heat 3 mins.','Create 2 gaps, crack eggs in. Season with salt and pepper.','Arrange tuna on top. Sprinkle oregano and chili.','Fry 3 more mins until whites are set. Serve with parsley.']
+  },
+  { id:6, emoji:'🥣', name:'Summer Smoothie Protein Bowl', kcal:252, protein:18, carbs:36, fat:5, serves:2, tags:['GF','V'], prepTime:'10 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🍑',name:'Peaches, frozen',qty:2,unit:'medium',cals:120,protein:3,carbs:30,fat:0,swaps:[{icon:'🥭',name:'Mango',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🍌',name:'Banana, frozen',qty:1,unit:'medium',cals:105,protein:1,carbs:27,fat:0,swaps:[{icon:'🍓',name:'Mixed berries',diff:'-60 kcal',diffClass:'neg'}]},
+      {icon:'🫙',name:'Natural yogurt',qty:190,unit:'g',cals:117,protein:7,carbs:9,fat:5,swaps:[{icon:'🫙',name:'Greek yogurt',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'💧',name:'Coconut water',qty:125,unit:'ml',cals:26,protein:0,carbs:6,fat:0,swaps:[{icon:'🥛',name:'Almond milk',diff:'-10 kcal',diffClass:'neg'}]},
+      {icon:'🫙',name:'Vanilla protein powder',qty:25,unit:'g',cals:100,protein:20,carbs:3,fat:1,swaps:[{icon:'🌿',name:'Plant protein',diff:'±0 kcal',diffClass:'neg'}]},
+    ],
+    steps:['Place all ingredients in a high-speed blender.','Blitz until smooth.','Divide between 2 bowls.','Add your favourite toppings and serve immediately.']
+  },
+  { id:7, emoji:'🥑', name:'Salmon Tartar With Avocado & Mango', kcal:282, protein:26, carbs:9, fat:17, serves:1, tags:['GF','DF','LC'], prepTime:'10 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🐟',name:'Salmon fillet',qty:100,unit:'g',cals:166,protein:20,carbs:0,fat:10,swaps:[{icon:'🐟',name:'Sashimi-grade tuna',diff:'-20 kcal',diffClass:'neg'}]},
+      {icon:'🥑',name:'Avocado',qty:0.25,unit:'',cals:80,protein:1,carbs:4,fat:7,swaps:[{icon:'🥒',name:'Cucumber',diff:'-72 kcal',diffClass:'neg'}]},
+      {icon:'🥭',name:'Mango',qty:30,unit:'g',cals:19,protein:0,carbs:5,fat:0,swaps:[{icon:'🍍',name:'Pineapple',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍋',name:'Lime juice + honey',qty:1,unit:'tbsp',cals:12,protein:0,carbs:3,fat:0,swaps:[]},
+    ],
+    steps:['Wash and dry salmon, cut into small cubes.','Cut avocado and mango into cubes, add to salmon.','Mix in lime juice, chili, coriander. Season with salt and pepper.','Refrigerate 10 minutes. Serve with toast (not included in nutrition info).']
+  },
+  { id:8, emoji:'🥬', name:'Tuna Salad Lettuce Wraps', kcal:286, protein:38, carbs:14, fat:9, serves:2, tags:['GF','DF','LC'], prepTime:'10 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🐟',name:'Tuna in olive oil',qty:280,unit:'g',cals:350,protein:56,carbs:0,fat:14,swaps:[{icon:'🐟',name:'Tuna in water',diff:'-80 kcal',diffClass:'neg'},{icon:'🐔',name:'Shredded chicken',diff:'-10 kcal',diffClass:'neg'}]},
+      {icon:'🍅',name:'Tomato puree',qty:1,unit:'tbsp',cals:13,protein:1,carbs:3,fat:0,swaps:[{icon:'🥑',name:'Avocado',diff:'+60 kcal',diffClass:'pos'}]},
+      {icon:'🧅',name:'Red onion',qty:1,unit:'small',cals:22,protein:1,carbs:5,fat:0,swaps:[]},
+      {icon:'🍎',name:'Granny Smith apple',qty:0.5,unit:'',cals:40,protein:0,carbs:10,fat:0,swaps:[{icon:'🥒',name:'Cucumber',diff:'-30 kcal',diffClass:'neg'}]},
+      {icon:'🥬',name:'Lettuce leaves',qty:8,unit:'',cals:8,protein:1,carbs:2,fat:0,swaps:[{icon:'🌮',name:'Corn tortillas',diff:'+120 kcal',diffClass:'pos'}]},
+    ],
+    steps:['Mix tuna and half the oil with tomato puree.','Finely chop red onion, add to tuna. Chop apple into cubes, add and mix.','Spread tuna mixture over 8 lettuce leaves and serve as wraps.']
+  },
+  { id:9, emoji:'🍊', name:'Chicken, Orange & Walnut Salad', kcal:458, protein:28, carbs:47, fat:20, serves:2, tags:['GF','DF','HP'], prepTime:'10 mins', cookTime:'10 mins',
+    ingredients:[
+      {icon:'🐔',name:'Chicken breast',qty:200,unit:'g',cals:220,protein:46,carbs:0,fat:4,swaps:[{icon:'🍤',name:'Grilled prawns',diff:'-60 kcal',diffClass:'neg'}]},
+      {icon:'🍊',name:'Orange',qty:1,unit:'',cals:62,protein:1,carbs:15,fat:0,swaps:[{icon:'🍇',name:'Mandarin',diff:'-15 kcal',diffClass:'neg'}]},
+      {icon:'🥗',name:'Rocket + iceberg',qty:4,unit:'handfuls',cals:20,protein:2,carbs:4,fat:0,swaps:[]},
+      {icon:'🌰',name:'Pecans, roasted',qty:30,unit:'g',cals:196,protein:3,carbs:4,fat:20,swaps:[{icon:'🥜',name:'Walnuts',diff:'-10 kcal',diffClass:'neg'}]},
+      {icon:'🍯',name:'Honey-mustard dressing',qty:1,unit:'serve',cals:120,protein:0,carbs:18,fat:5,swaps:[{icon:'🍋',name:'Lemon-olive oil dressing',diff:'-40 kcal',diffClass:'neg'}]},
+    ],
+    steps:['Peel orange, cut out pulp. Squeeze juice for dressing.','Mix honey, mustard, olive oil, lemon juice, orange juice, cinnamon.','Season chicken, coat in oil, grill 4 mins each side. Drizzle with dressing, grill 2 more mins.','Slice chicken. Divide salad leaves between plates.','Top with orange, chicken, pomegranate seeds and pecans. Drizzle remaining dressing.']
+  },
+  { id:10, emoji:'🐟', name:'Salmon & Peach Salad', kcal:416, protein:33, carbs:21, fat:25, serves:2, tags:['GF','DF','HP'], prepTime:'30 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🐟',name:'Salmon fillets',qty:280,unit:'g',cals:370,protein:50,carbs:0,fat:18,swaps:[{icon:'🐟',name:'Trout fillets',diff:'-20 kcal',diffClass:'neg'}]},
+      {icon:'🌽',name:'Corn cob',qty:1,unit:'',cals:88,protein:3,carbs:19,fat:1,swaps:[{icon:'🍠',name:'Roasted sweet potato',diff:'+30 kcal',diffClass:'pos'}]},
+      {icon:'🍑',name:'Peach',qty:1,unit:'',cals:59,protein:1,carbs:14,fat:0,swaps:[{icon:'🥭',name:'Mango',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🍅',name:'Cherry tomatoes',qty:10,unit:'',cals:35,protein:2,carbs:8,fat:0,swaps:[]},
+      {icon:'🥗',name:'Salad leaves',qty:120,unit:'g',cals:24,protein:2,carbs:4,fat:0,swaps:[]},
+    ],
+    steps:['Combine apple cider vinegar, olive oil, tamari, maple syrup and pepper for marinade.','Marinate salmon skinless-side down 20–30 mins in fridge.','Grill corn then cut kernels off. Preheat oven to 200°C.','Bake salmon 8–10 mins until cooked through.','Divide salad into bowls, top with peach, tomatoes, corn then salmon. Drizzle balsamic.']
+  },
+  { id:11, emoji:'🥦', name:'Tuna & Broccoli Salad With Honey Vinaigrette', kcal:328, protein:21, carbs:26, fat:14, serves:2, tags:['HP'], prepTime:'10 mins', cookTime:'5 mins',
+    ingredients:[
+      {icon:'🐟',name:'Tuna in water',qty:120,unit:'g',cals:100,protein:22,carbs:0,fat:1,swaps:[{icon:'🐟',name:'Tuna in oil',diff:'+80 kcal',diffClass:'pos'},{icon:'🐔',name:'Shredded chicken',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🥦',name:'Broccoli',qty:100,unit:'g',cals:34,protein:3,carbs:7,fat:0,swaps:[{icon:'🥦',name:'Broccolini',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍞',name:'Bread (toasted croutons)',qty:2,unit:'slices',cals:140,protein:5,carbs:26,fat:2,swaps:[{icon:'🌾',name:'GF bread',diff:'±0 kcal',diffClass:'neg'},{icon:'🚫',name:'Remove (LC)',diff:'-140 kcal',diffClass:'neg'}]},
+      {icon:'🧀',name:'Parmesan',qty:10,unit:'g',cals:39,protein:3,carbs:0,fat:3,swaps:[{icon:'🧀',name:'Nutritional yeast',diff:'-15 kcal',diffClass:'neg'}]},
+      {icon:'🍋',name:'Honey vinaigrette',qty:1,unit:'serve',cals:115,protein:0,carbs:8,fat:9,swaps:[{icon:'🍋',name:'Lemon-olive oil',diff:'±0 kcal',diffClass:'neg'}]},
+    ],
+    steps:['Divide salad leaves. Add sliced radish and tuna.','Toast bread and cut into cubes, add to salad.','Boil broccoli 5 mins, drain and add to salad.','Mix dressing ingredients and drizzle over. Sprinkle with parmesan.']
+  },
+  // ---- RECIPES 13–52 ----
+  { id:12, emoji:'🥗', name:'Grilled Chicken & Pineapple Salad', kcal:356, protein:27, carbs:34, fat:16, serves:2, tags:['GF','DF','HP'], prepTime:'10 mins', cookTime:'13 mins',
+    ingredients:[
+      {icon:'🐔',name:'Chicken breast',qty:200,unit:'g',cals:220,protein:46,carbs:0,fat:4,swaps:[{icon:'🍤',name:'Grilled prawns',diff:'-60 kcal',diffClass:'neg'}]},
+      {icon:'🍍',name:'Pineapple slices, canned',qty:4,unit:'',cals:60,protein:0,carbs:16,fat:0,swaps:[{icon:'🥭',name:'Fresh mango',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🥗',name:'Salad leaves + mint',qty:2,unit:'handfuls',cals:20,protein:1,carbs:4,fat:0,swaps:[]},
+      {icon:'🧅',name:'Red onion',qty:0.5,unit:'small',cals:20,protein:0,carbs:5,fat:0,swaps:[]},
+      {icon:'🍋',name:'Ginger-lime dressing',qty:1,unit:'serve',cals:80,protein:0,carbs:8,fat:5,swaps:[{icon:'🍋',name:'Lemon-olive oil',diff:'-20 kcal',diffClass:'neg'}]},
+    ],
+    steps:['Mix dressing in salad bowl. Add spinach and mint, let rest.','Cut chicken breasts in half horizontally. Cover each with a pineapple slice, season.','Grill 6–8 mins, turn, grill 5 more mins. Remove pineapple and let it grill separately.','Rest chicken 3 mins then slice. Add to salad with sliced pineapple and red onion.','Toss and serve.']
+  },
+  { id:13, emoji:'🥗', name:'Waldorf Chicken Salad', kcal:354, protein:20, carbs:33, fat:16, serves:2, tags:['GF','MP','HP'], prepTime:'10 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🐔',name:'Chicken, cooked & shredded',qty:100,unit:'g',cals:110,protein:23,carbs:0,fat:2,swaps:[{icon:'🥚',name:'Hard-boiled eggs',diff:'-30 kcal',diffClass:'neg'}]},
+      {icon:'🍎',name:'Apple, peeled & chopped',qty:1,unit:'',cals:80,protein:0,carbs:21,fat:0,swaps:[{icon:'🍐',name:'Pear',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🌰',name:'Walnuts, chopped',qty:30,unit:'g',cals:196,protein:5,carbs:4,fat:20,swaps:[{icon:'🥜',name:'Pecans',diff:'-10 kcal',diffClass:'neg'}]},
+      {icon:'🍇',name:'Raisins',qty:40,unit:'g',cals:120,protein:1,carbs:32,fat:0,swaps:[{icon:'🫐',name:'Dried cranberries',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🥗',name:'Mixed salad leaves',qty:90,unit:'g',cals:18,protein:2,carbs:3,fat:0,swaps:[]},
+    ],
+    steps:['Mix chicken, celery, apple, raisins and walnuts in a bowl.','Add mayonnaise, yogurt and lemon juice. Season and mix well.','Divide salad leaves between bowls and top with filling.','Serve with freshly ground black pepper.']
+  },
+  { id:14, emoji:'🥙', name:'Tuna & Quinoa Toss Salad', kcal:399, protein:37, carbs:41, fat:11, serves:2, tags:['GF','MP','HP'], prepTime:'10 mins', cookTime:'10 mins',
+    ingredients:[
+      {icon:'🐟',name:'Tuna, drained',qty:200,unit:'g',cals:160,protein:36,carbs:0,fat:2,swaps:[{icon:'🐔',name:'Shredded chicken',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🌾',name:'Cooked quinoa',qty:185,unit:'g',cals:222,protein:8,carbs:39,fat:4,swaps:[{icon:'🍚',name:'Brown rice',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🫘',name:'Chickpeas',qty:50,unit:'g',cals:60,protein:4,carbs:10,fat:1,swaps:[{icon:'🫘',name:'Edamame',diff:'-10 kcal',diffClass:'neg'}]},
+      {icon:'🥒',name:'Cucumber',qty:0.5,unit:'',cals:8,protein:0,carbs:2,fat:0,swaps:[]},
+      {icon:'🧀',name:'Feta cheese',qty:15,unit:'g',cals:40,protein:3,carbs:1,fat:3,swaps:[]},
+    ],
+    steps:['Cook quinoa according to packet instructions.','Combine dressing ingredients in a small bowl.','Combine quinoa and remaining salad ingredients in a bowl.','Drizzle with dressing and toss gently to coat.']
+  },
+  { id:15, emoji:'🐟', name:'Salmon & Couscous Salad', kcal:516, protein:36, carbs:29, fat:29, serves:2, tags:['MP','HP'], prepTime:'10 mins', cookTime:'12 mins',
+    ingredients:[
+      {icon:'🐟',name:'Salmon pieces',qty:230,unit:'g',cals:340,protein:46,carbs:0,fat:18,swaps:[{icon:'🐟',name:'Trout',diff:'-20 kcal',diffClass:'neg'}]},
+      {icon:'🌾',name:'Couscous, cooked',qty:157,unit:'g',cals:176,protein:6,carbs:36,fat:0,swaps:[{icon:'🌾',name:'Quinoa',diff:'-10 kcal',diffClass:'neg'}]},
+      {icon:'🧅',name:'Red onion',qty:0.5,unit:'',cals:20,protein:0,carbs:5,fat:0,swaps:[]},
+      {icon:'🍅',name:'Cherry tomatoes',qty:10,unit:'',cals:35,protein:2,carbs:8,fat:0,swaps:[]},
+      {icon:'🧀',name:'Feta cheese',qty:2,unit:'tbsp',cals:50,protein:3,carbs:1,fat:4,swaps:[]},
+    ],
+    steps:['Preheat oven to 200°C. Rub salmon with olive oil, season.','Place skin-side down on baking tray. Pour lemon juice over. Roast 10–12 mins.','Whisk dressing ingredients together.','Layer iceberg lettuce, couscous, red onion, tomatoes and feta in bowls.','Top with salmon and drizzle with dressing.']
+  },
+  { id:16, emoji:'🥞', name:'Post-Workout Potato Pancakes With Cottage Cheese', kcal:502, protein:28, carbs:56, fat:20, serves:1, tags:['V'], prepTime:'10 mins', cookTime:'10 mins',
+    ingredients:[
+      {icon:'🥔',name:'Potato, grated',qty:140,unit:'g',cals:108,protein:3,carbs:25,fat:0,swaps:[{icon:'🍠',name:'Sweet potato',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🥒',name:'Zucchini, grated',qty:50,unit:'g',cals:8,protein:1,carbs:2,fat:0,swaps:[]},
+      {icon:'🥚',name:'Egg',qty:1,unit:'',cals:72,protein:6,carbs:0,fat:5,swaps:[]},
+      {icon:'🧀',name:'Cottage cheese',qty:50,unit:'g',cals:52,protein:6,carbs:2,fat:2,swaps:[{icon:'🫙',name:'Greek yogurt',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🌿',name:'Dill + shallot',qty:1,unit:'serve',cals:10,protein:1,carbs:2,fat:0,swaps:[]},
+    ],
+    steps:['Grate potato and zucchini. Mix with egg, shallot, dill, flour, salt and pepper.','Fry small pancakes on non-stick pan 3 mins each side.','Mix cottage cheese, yogurt, radish, dill and shallot. Season.','Serve pancakes warm with cheese topping.']
+  },
+  { id:17, emoji:'🍜', name:'Miso Salmon With Zucchini Noodles', kcal:496, protein:29, carbs:27, fat:30, serves:2, tags:['GF','DF'], prepTime:'20 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🐟',name:'Salmon fillets',qty:260,unit:'g',cals:364,protein:40,carbs:0,fat:22,swaps:[{icon:'🐟',name:'Trout fillets',diff:'-20 kcal',diffClass:'neg'}]},
+      {icon:'🥒',name:'Zucchini noodles',qty:400,unit:'g',cals:64,protein:4,carbs:12,fat:0,swaps:[{icon:'🍜',name:'Rice noodles',diff:'+80 kcal',diffClass:'pos'}]},
+      {icon:'🫙',name:'Miso paste',qty:2,unit:'tbsp',cals:34,protein:2,carbs:4,fat:1,swaps:[]},
+      {icon:'🍯',name:'Honey',qty:2,unit:'tbsp',cals:128,protein:0,carbs:35,fat:0,swaps:[{icon:'🍁',name:'Maple syrup',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🫙',name:'Tamari + sesame oil',qty:1,unit:'serve',cals:60,protein:2,carbs:4,fat:4,swaps:[]},
+    ],
+    steps:['Mix marinade. Coat salmon and refrigerate 20+ mins.','Place zucchini noodles and radish in bowl. Mix dressing and pour over. Refrigerate.','Preheat oven to 180°C.','Place salmon in oven dish, pour some marinade over. Bake 12 mins then broil 2–3 mins.','Serve salmon with zucchini salad. Sprinkle sesame seeds.']
+  },
+  { id:18, emoji:'🐟', name:'Moroccan Cod & Bulgur Salad', kcal:447, protein:34, carbs:42, fat:18, serves:2, tags:['DF','HP'], prepTime:'35 mins', cookTime:'20 mins',
+    ingredients:[
+      {icon:'🐟',name:'Cod fillets',qty:300,unit:'g',cals:198,protein:44,carbs:0,fat:2,swaps:[{icon:'🐟',name:'Hake or haddock',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🌾',name:'Bulgur wheat',qty:100,unit:'g',cals:342,protein:12,carbs:76,fat:1,swaps:[{icon:'🌾',name:'Quinoa',diff:'-20 kcal',diffClass:'neg'}]},
+      {icon:'🍅',name:'Tomato',qty:1,unit:'',cals:33,protein:2,carbs:7,fat:0,swaps:[]},
+      {icon:'🫒',name:'Green olives',qty:15,unit:'',cals:75,protein:1,carbs:2,fat:7,swaps:[]},
+      {icon:'🧄',name:'Moroccan spices + garlic',qty:1,unit:'serve',cals:20,protein:1,carbs:4,fat:1,swaps:[]},
+    ],
+    steps:['Drizzle cod with lemon juice, rub with garlic and spices, coat with oil. Marinate 30 mins.','Cook bulgur in salted water 15 mins. Set aside.','Prepare tomato salad with onion, olives and parsley.','Fry cod 3–4 mins each side until cooked. Remove.','Heat bulgur in same pan with juices. Divide between plates, top with cod and tomato salad.']
+  },
+  { id:19, emoji:'🥦', name:'Turkey & Broccoli Stir Fry', kcal:494, protein:42, carbs:56, fat:16, serves:2, tags:['GF','DF','HP'], prepTime:'10 mins', cookTime:'20 mins',
+    ingredients:[
+      {icon:'🦃',name:'Turkey fillet',qty:200,unit:'g',cals:220,protein:48,carbs:0,fat:2,swaps:[{icon:'🐔',name:'Chicken breast',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍜',name:'Black rice noodles',qty:100,unit:'g',cals:350,protein:8,carbs:72,fat:2,swaps:[{icon:'🍜',name:'Rice noodles',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🥦',name:'Broccoli',qty:1,unit:'head',cals:55,protein:5,carbs:11,fat:0,swaps:[{icon:'🥦',name:'Broccolini',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🫙',name:'Soy + sesame sauce',qty:4,unit:'tbsp',cals:60,protein:3,carbs:4,fat:3,swaps:[]},
+      {icon:'🧄',name:'Ginger + spring onion',qty:1,unit:'serve',cals:15,protein:1,carbs:3,fat:0,swaps:[]},
+    ],
+    steps:['Cook noodles, strain and rinse cold. Set aside.','Fry turkey in wok with oil 3–4 mins. Add broccoli, fry 1–2 mins.','Add ½ cup water and 3 tbsp soy sauce. Cook until water evaporates and broccoli is tender.','Mix remaining sauce ingredients separately.','Add noodles to wok, heat 2–3 mins. Remove from heat, add sauce and mix gently.','Serve with spring onions and coriander.']
+  },
+  { id:20, emoji:'🐟', name:'Baked Salmon With Zoodles & Quinoa', kcal:487, protein:38, carbs:19, fat:28, serves:2, tags:['GF','DF','LC','HP'], prepTime:'10 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🐟',name:'Salmon fillets',qty:250,unit:'g',cals:350,protein:44,carbs:0,fat:20,swaps:[{icon:'🐟',name:'Trout',diff:'-20 kcal',diffClass:'neg'}]},
+      {icon:'🌾',name:'Quinoa, cooked',qty:100,unit:'g',cals:120,protein:4,carbs:21,fat:2,swaps:[{icon:'🍚',name:'Brown rice',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🥒',name:'Zucchini, spiralized',qty:1,unit:'',cals:18,protein:1,carbs:4,fat:0,swaps:[]},
+      {icon:'🍅',name:'Sundried tomatoes',qty:70,unit:'g',cals:140,protein:3,carbs:10,fat:8,swaps:[]},
+      {icon:'🫙',name:'Tamari marinade',qty:1,unit:'serve',cals:80,protein:2,carbs:8,fat:4,swaps:[]},
+    ],
+    steps:['Mix marinade. Cover salmon and marinate 1 hour.','Cook quinoa. Spiralize zucchini.','Fry garlic in oil 1–2 mins. Add zoodles, stir until softened. Add sundried tomatoes, season.','Heat oven to 250°C. Bake salmon on tray 7 mins.','Pour salmon juices into quinoa and mix. Divide quinoa and zoodles between plates, top with salmon.']
+  },
+  { id:21, emoji:'🍗', name:'Chicken Thighs With Hoisin Rice', kcal:336, protein:29, carbs:16, fat:15, serves:8, tags:['GF','DF','LC','MP','HP'], prepTime:'5 mins', cookTime:'50 mins',
+    ingredients:[
+      {icon:'🍗',name:'Chicken thighs, skinless',qty:8,unit:'',cals:880,protein:120,carbs:0,fat:40,swaps:[{icon:'🐔',name:'Chicken breast',diff:'-200 kcal',diffClass:'neg'}]},
+      {icon:'🍚',name:'Jasmine rice',qty:200,unit:'g',cals:260,protein:5,carbs:57,fat:0,swaps:[{icon:'🌾',name:'Brown rice',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🧄',name:'Garlic + spring onions',qty:4,unit:'cloves',cals:20,protein:1,carbs:5,fat:0,swaps:[]},
+      {icon:'🍷',name:'White wine + stock',qty:1,unit:'serve',cals:60,protein:1,carbs:4,fat:0,swaps:[]},
+      {icon:'🫙',name:'Hoisin sauce mix',qty:1,unit:'serve',cals:80,protein:2,carbs:12,fat:2,swaps:[]},
+    ],
+    steps:['Preheat oven to 190°C.','Fry chicken thighs 5 mins each side until golden. Remove.','Pour off excess fat, fry garlic and spring onions 1 min. Add rice, fry 1 min.','Pour in wine, cook 2 mins. Add hoisin sauce, stock and cranberries, bring to boil.','Transfer to oven dish, place chicken in centre. Bake 30 mins.','Divide between plates or store up to 3 days.']
+  },
+  { id:22, emoji:'🥩', name:'Chinese Pork Stir-Fry With Pineapple', kcal:303, protein:28, carbs:22, fat:11, serves:4, tags:['GF','DF','MP'], prepTime:'20 mins', cookTime:'10 mins',
+    ingredients:[
+      {icon:'🥩',name:'Pork tenderloin',qty:400,unit:'g',cals:480,protein:72,carbs:0,fat:12,swaps:[{icon:'🐔',name:'Chicken breast',diff:'-40 kcal',diffClass:'neg'}]},
+      {icon:'🍍',name:'Pineapple in juice',qty:135,unit:'ml',cals:60,protein:0,carbs:16,fat:0,swaps:[]},
+      {icon:'🍚',name:'White rice',qty:100,unit:'g',cals:130,protein:3,carbs:29,fat:0,swaps:[{icon:'🌾',name:'Cauliflower rice',diff:'-100 kcal',diffClass:'neg'}]},
+      {icon:'🫑',name:'Bell pepper + onion',qty:1,unit:'serve',cals:45,protein:1,carbs:10,fat:0,swaps:[]},
+      {icon:'🫙',name:'Pineapple-soy sauce',qty:1,unit:'serve',cals:60,protein:2,carbs:10,fat:1,swaps:[]},
+    ],
+    steps:['Slice pork very thin, season, coat with potato starch.','Cook rice per instructions. Drain pineapple, keep juice for sauce.','Stir fry vegetables on high heat 3 mins. Add pineapple, fry 2 more mins. Remove.','Fry pork in fresh oil on high heat 3 mins stirring constantly.','Add vegetables back, add sauce, cook 2 mins until thickened. Serve with rice.']
+  },
+  { id:23, emoji:'🌮', name:'Slow Cooker Chicken Fajitas', kcal:183, protein:28, carbs:12, fat:3, serves:8, tags:['GF','DF','LC','MP','HP'], prepTime:'10 mins', cookTime:'240 mins',
+    ingredients:[
+      {icon:'🐔',name:'Chicken breasts',qty:900,unit:'g',cals:990,protein:180,carbs:0,fat:20,swaps:[]},
+      {icon:'🫑',name:'Bell peppers',qty:4,unit:'',cals:100,protein:4,carbs:24,fat:0,swaps:[]},
+      {icon:'🧅',name:'Red onion',qty:1,unit:'',cals:44,protein:1,carbs:10,fat:0,swaps:[]},
+      {icon:'🍅',name:'Chopped tomatoes',qty:1,unit:'cup',cals:40,protein:2,carbs:8,fat:0,swaps:[]},
+      {icon:'🌶',name:'Fajita spice mix',qty:1,unit:'serve',cals:20,protein:1,carbs:4,fat:0,swaps:[]},
+    ],
+    steps:['Place half the peppers and onion in slow cooker.','Layer chicken, coat with honey, oil, lime juice, seasonings and tomatoes.','Add remaining peppers and onions. Cook 4 hours on high.','Remove chicken, shred with fork. Return to slow cooker, mix well, cook 10 more mins on low.','Assemble fajitas with tortillas, cream, guacamole and coriander.']
+  },
+  { id:24, emoji:'🍝', name:'Creamy Chicken, Mushroom & Tomato Pasta', kcal:385, protein:35, carbs:26, fat:14, serves:3, tags:['DF','MP'], prepTime:'10 mins', cookTime:'20 mins',
+    ingredients:[
+      {icon:'🐔',name:'Chicken breast',qty:350,unit:'g',cals:385,protein:77,carbs:0,fat:7,swaps:[{icon:'🦃',name:'Turkey fillet',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍝',name:'Penne pasta',qty:150,unit:'g',cals:525,protein:19,carbs:105,fat:3,swaps:[{icon:'🍝',name:'GF pasta',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍄',name:'Mushrooms',qty:300,unit:'g',cals:66,protein:9,carbs:9,fat:1,swaps:[]},
+      {icon:'🍅',name:'Sundried tomatoes',qty:6,unit:'',cals:60,protein:2,carbs:8,fat:3,swaps:[]},
+      {icon:'🥛',name:'Oat cream',qty:125,unit:'ml',cals:90,protein:2,carbs:9,fat:5,swaps:[{icon:'🥛',name:'Regular cream',diff:'+60 kcal',diffClass:'pos'}]},
+    ],
+    steps:['Cook pasta per instructions.','Season and flour chicken. Fry in oil over medium heat until cooked. Remove and set aside.','Sauté onion and garlic in same pan. Add mushrooms, cook 5–7 mins. Add sundried tomatoes.','Return chicken, add cream and spinach. Bring to boil until spinach wilts.','Add cooked pasta, stir well and serve.']
+  },
+  { id:25, emoji:'🍚', name:'Cajun Beef & Veg Rice', kcal:503, protein:40, carbs:55, fat:13, serves:3, tags:['GF','DF','MP'], prepTime:'10 mins', cookTime:'25 mins',
+    ingredients:[
+      {icon:'🥩',name:'Beef mince 5% fat',qty:500,unit:'g',cals:535,protein:75,carbs:0,fat:23,swaps:[{icon:'🦃',name:'Turkey mince',diff:'-100 kcal',diffClass:'neg'}]},
+      {icon:'🍚',name:'Cooked rice',qty:500,unit:'g',cals:650,protein:13,carbs:143,fat:2,swaps:[{icon:'🌾',name:'Cauliflower rice',diff:'-550 kcal',diffClass:'neg'}]},
+      {icon:'🥕',name:'Carrots + peppers',qty:1,unit:'serve',cals:60,protein:2,carbs:14,fat:0,swaps:[]},
+      {icon:'🌶',name:'Cajun seasoning',qty:2,unit:'tsp',cals:10,protein:0,carbs:2,fat:0,swaps:[]},
+      {icon:'🍅',name:'Tomato purée',qty:1,unit:'tbsp',cals:13,protein:1,carbs:3,fat:0,swaps:[]},
+    ],
+    steps:['Heat oil in large pan. Sauté carrots, peppers and white spring onions 10 mins.','Add beef mince, season, cook 10 mins until browned.','Add Cajun seasoning and tomato purée, stir well.','Add rice and 4 tbsp water. Stir to combine, cook 3–4 more mins.','Serve sprinkled with green spring onions.']
+  },
+  { id:26, emoji:'🍤', name:'Chinese Style Shrimps & Veg', kcal:436, protein:22, carbs:63, fat:11, serves:3, tags:['GF','DF','MP','HP'], prepTime:'15 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🍤',name:'Shrimps',qty:250,unit:'g',cals:200,protein:42,carbs:0,fat:2,swaps:[{icon:'🐔',name:'Chicken strips',diff:'+40 kcal',diffClass:'pos'}]},
+      {icon:'🍚',name:'Rice, uncooked',qty:185,unit:'g',cals:680,protein:14,carbs:150,fat:1,swaps:[{icon:'🌾',name:'Cauliflower rice',diff:'-600 kcal',diffClass:'neg'}]},
+      {icon:'🥕',name:'Carrot + pepper + zucchini',qty:1,unit:'serve',cals:60,protein:2,carbs:13,fat:0,swaps:[]},
+      {icon:'🧄',name:'Garlic + ginger',qty:1,unit:'serve',cals:15,protein:0,carbs:3,fat:0,swaps:[]},
+      {icon:'🫙',name:'Soy + potato flour sauce',qty:1,unit:'serve',cals:50,protein:2,carbs:8,fat:1,swaps:[]},
+    ],
+    steps:['Cook rice per instructions.','Heat 1 tbsp oil in wok. Sauté carrots, peppers and garlic 3 mins. Add zucchini, stir 5 mins. Add ginger, season.','Move veg to edges. Add remaining oil, cook shrimps on high 1 min each side. Mix with veg 1 more min.','Mix soy sauce with potato flour, water and sugar. Pour into pan, bring to boil, simmer 1 min.','Serve over rice.']
+  },
+  { id:27, emoji:'🍝', name:'Zesty Turkey Meatballs With Couscous Salad', kcal:429, protein:42, carbs:52, fat:8, serves:4, tags:['MP','HP'], prepTime:'20 mins', cookTime:'30 mins',
+    ingredients:[
+      {icon:'🦃',name:'Turkey thigh mince',qty:500,unit:'g',cals:550,protein:70,carbs:0,fat:20,swaps:[{icon:'🐔',name:'Chicken mince',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🌾',name:'Couscous',qty:200,unit:'g',cals:700,protein:24,carbs:145,fat:2,swaps:[{icon:'🌾',name:'Quinoa',diff:'-50 kcal',diffClass:'neg'}]},
+      {icon:'🫙',name:'Greek yogurt sauce',qty:200,unit:'g',cals:120,protein:14,carbs:8,fat:2,swaps:[]},
+      {icon:'🍋',name:'Lemon + mint + chili',qty:1,unit:'serve',cals:20,protein:1,carbs:4,fat:0,swaps:[]},
+      {icon:'🫛',name:'Frozen peas + radishes',qty:1,unit:'serve',cals:80,protein:5,carbs:14,fat:0,swaps:[]},
+    ],
+    steps:['Sauté onion 5 mins. Add chili, garlic, cook 1 min. Cool.','Add turkey, half the mint, lemon zest and 1 tbsp couscous. Mix, shape 16 meatballs. Freeze 15 mins.','Pour hot stock over couscous and lemon zest. Cover 15 mins.','Blanch peas 2 mins. Make yogurt sauce with garlic, mint and lemon juice.','Fry meatballs 10 mins until browned and cooked through. Serve with couscous and yogurt sauce.']
+  },
+  { id:28, emoji:'🐟', name:'Honey & Lime Glazed Salmon With Pineapple Rice', kcal:643, protein:35, carbs:68, fat:24, serves:4, tags:['GF','DF','HP'], prepTime:'65 mins', cookTime:'35 mins',
+    ingredients:[
+      {icon:'🐟',name:'Salmon fillets',qty:600,unit:'g',cals:792,protein:84,carbs:0,fat:48,swaps:[{icon:'🐟',name:'Trout',diff:'-40 kcal',diffClass:'neg'}]},
+      {icon:'🍚',name:'Rice',qty:150,unit:'g',cals:195,protein:4,carbs:43,fat:0,swaps:[]},
+      {icon:'🍍',name:'Pineapple',qty:250,unit:'g',cals:130,protein:1,carbs:34,fat:0,swaps:[{icon:'🥭',name:'Mango',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🍋',name:'Honey-lime marinade',qty:1,unit:'serve',cals:120,protein:0,carbs:28,fat:2,swaps:[]},
+      {icon:'🥒',name:'Cucumber + sweetcorn',qty:1,unit:'serve',cals:60,protein:2,carbs:12,fat:0,swaps:[]},
+    ],
+    steps:['Mix marinade. Coat salmon, marinate 1 hour.','Cook rice in salted water. Spread on plate to cool.','Add sweetcorn to rice. Combine pineapple and cucumber, season with lime, honey and coriander.','Preheat oven to 210°C. Bake salmon 18 mins.','Serve salmon over pineapple rice.']
+  },
+  { id:29, emoji:'🥤', name:'Cinnamon Roll Protein Smoothie', kcal:255, protein:22, carbs:35, fat:3, serves:2, tags:['GF','V'], prepTime:'5 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🍌',name:'Banana',qty:1,unit:'',cals:105,protein:1,carbs:27,fat:0,swaps:[{icon:'🥭',name:'Mango',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🫙',name:'Vanilla protein powder',qty:50,unit:'g',cals:200,protein:40,carbs:6,fat:2,swaps:[{icon:'🌿',name:'Plant protein',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🌿',name:'Cinnamon',qty:1,unit:'tsp',cals:6,protein:0,carbs:2,fat:0,swaps:[]},
+      {icon:'🥛',name:'Almond milk',qty:240,unit:'ml',cals:40,protein:1,carbs:2,fat:3,swaps:[{icon:'🥛',name:'Oat milk',diff:'+30 kcal',diffClass:'pos'}]},
+      {icon:'🧊',name:'Ice cubes',qty:1,unit:'cup',cals:0,protein:0,carbs:0,fat:0,swaps:[]},
+    ],
+    steps:['Add all ingredients to blender.','Blend until smooth.','Divide between 2 glasses and serve immediately.']
+  },
+  { id:30, emoji:'🫐', name:'Antioxidant Blueberry Protein Smoothie', kcal:197, protein:26, carbs:14, fat:4, serves:1, tags:['GF','V'], prepTime:'5 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🫐',name:'Frozen blueberries',qty:50,unit:'g',cals:29,protein:0,carbs:7,fat:0,swaps:[{icon:'🍓',name:'Mixed berries',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🫙',name:'Vanilla whey protein',qty:1,unit:'scoop',cals:100,protein:20,carbs:3,fat:1,swaps:[{icon:'🌿',name:'Plant protein',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'💧',name:'Coconut water',qty:125,unit:'ml',cals:26,protein:0,carbs:6,fat:0,swaps:[{icon:'💧',name:'Water',diff:'-26 kcal',diffClass:'neg'}]},
+      {icon:'🥛',name:'Almond milk',qty:125,unit:'ml',cals:20,protein:1,carbs:1,fat:2,swaps:[]},
+      {icon:'🌿',name:'Cinnamon + chia seeds',qty:1,unit:'tsp each',cals:22,protein:1,carbs:2,fat:1,swaps:[]},
+    ],
+    steps:['Add all ingredients to blender.','Blend until smooth and serve immediately.']
+  },
+  { id:31, emoji:'☕', name:'Vanilla & Coffee Protein Smoothie', kcal:174, protein:26, carbs:4, fat:6, serves:2, tags:['GF','V','LC'], prepTime:'5 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'☕',name:'Espresso',qty:60,unit:'ml',cals:2,protein:0,carbs:0,fat:0,swaps:[{icon:'☕',name:'Cold brew',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🥛',name:'Almond milk',qty:400,unit:'ml',cals:70,protein:2,carbs:3,fat:5,swaps:[{icon:'🥛',name:'Oat milk',diff:'+60 kcal',diffClass:'pos'}]},
+      {icon:'🫙',name:'Vanilla whey protein',qty:2,unit:'scoops',cals:200,protein:40,carbs:6,fat:2,swaps:[{icon:'🌿',name:'Plant protein',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🌿',name:'Cinnamon',qty:2,unit:'tsp',cals:12,protein:0,carbs:4,fat:0,swaps:[]},
+      {icon:'🌾',name:'Flax seeds',qty:2,unit:'tbsp',cals:74,protein:3,carbs:4,fat:6,swaps:[{icon:'🌾',name:'Chia seeds',diff:'-10 kcal',diffClass:'neg'}]},
+    ],
+    steps:['Add all ingredients to blender with a handful of ice.','Blend until smooth.','Divide between 2 glasses and serve.']
+  },
+  { id:32, emoji:'🥬', name:'Green Glow Protein Smoothie', kcal:350, protein:29, carbs:34, fat:12, serves:1, tags:['GF','V'], prepTime:'5 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🍌',name:'Small banana',qty:1,unit:'',cals:90,protein:1,carbs:23,fat:0,swaps:[{icon:'🥭',name:'Mango',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🥬',name:'Spinach + kale',qty:2,unit:'cups',cals:20,protein:2,carbs:4,fat:0,swaps:[{icon:'🥬',name:'Spinach only',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🌰',name:'Almond butter',qty:1,unit:'tbsp',cals:98,protein:3,carbs:3,fat:9,swaps:[{icon:'🥜',name:'Peanut butter',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'💧',name:'Coconut water',qty:150,unit:'ml',cals:30,protein:0,carbs:7,fat:0,swaps:[{icon:'💧',name:'Water',diff:'-30 kcal',diffClass:'neg'}]},
+      {icon:'🫙',name:'Vanilla protein (optional)',qty:25,unit:'g',cals:100,protein:20,carbs:3,fat:1,swaps:[]},
+    ],
+    steps:['Add all ingredients to blender.','Blend on high until smooth.','Serve immediately.']
+  },
+  { id:33, emoji:'🍓', name:'Raspberry Protein Smoothie', kcal:331, protein:29, carbs:25, fat:12, serves:1, tags:['GF','V'], prepTime:'5 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🍌',name:'Ripe banana',qty:0.5,unit:'',cals:52,protein:1,carbs:13,fat:0,swaps:[]},
+      {icon:'🍓',name:'Frozen raspberries',qty:125,unit:'g',cals:40,protein:1,carbs:9,fat:0,swaps:[{icon:'🫐',name:'Mixed berries',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🥛',name:'Almond milk',qty:240,unit:'ml',cals:40,protein:1,carbs:2,fat:3,swaps:[{icon:'🥛',name:'Oat milk',diff:'+30 kcal',diffClass:'pos'}]},
+      {icon:'🫙',name:'Whey or pea protein',qty:2,unit:'tbsp',cals:80,protein:16,carbs:2,fat:1,swaps:[]},
+      {icon:'🌰',name:'Almond butter',qty:1,unit:'tbsp',cals:98,protein:3,carbs:3,fat:9,swaps:[{icon:'🥜',name:'Peanut butter',diff:'±0 kcal',diffClass:'neg'}]},
+    ],
+    steps:['Add all ingredients to blender with a handful of ice.','Blend until smooth and creamy.','Serve immediately.']
+  },
+  { id:34, emoji:'🍵', name:'Matcha Chia Pudding', kcal:275, protein:23, carbs:19, fat:9, serves:2, tags:['GF','V'], prepTime:'5 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🌿',name:'Chia seeds',qty:30,unit:'g',cals:146,protein:5,carbs:12,fat:9,swaps:[]},
+      {icon:'🥛',name:'Almond milk',qty:360,unit:'ml',cals:60,protein:2,carbs:3,fat:5,swaps:[{icon:'🥛',name:'Oat milk',diff:'+60 kcal',diffClass:'pos'}]},
+      {icon:'🌿',name:'Matcha powder',qty:1,unit:'tsp',cals:5,protein:1,carbs:1,fat:0,swaps:[]},
+      {icon:'🫙',name:'Soy protein isolate',qty:40,unit:'g',cals:140,protein:32,carbs:2,fat:2,swaps:[{icon:'🫙',name:'Vanilla whey',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍁',name:'Maple syrup',qty:2,unit:'tsp',cals:34,protein:0,carbs:9,fat:0,swaps:[{icon:'🍯',name:'Honey',diff:'±0 kcal',diffClass:'neg'}]},
+    ],
+    steps:['Whisk all ingredients together thoroughly.','Refrigerate overnight or at least 2 hours until set.','Serve topped with fresh or frozen berries.']
+  },
+  { id:35, emoji:'🍑', name:'Protein Fruit Bowls', kcal:250, protein:25, carbs:30, fat:4, serves:4, tags:['GF','V'], prepTime:'5 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🫙',name:'Natural quark',qty:400,unit:'g',cals:280,protein:48,carbs:8,fat:4,swaps:[{icon:'🫙',name:'Greek yogurt',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🥭',name:'Mango, chopped',qty:0.25,unit:'',cals:40,protein:0,carbs:10,fat:0,swaps:[{icon:'🍑',name:'Peach',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍓',name:'Strawberries + banana',qty:1,unit:'serve',cals:60,protein:1,carbs:14,fat:0,swaps:[{icon:'🫐',name:'Mixed berries',diff:'-20 kcal',diffClass:'neg'}]},
+      {icon:'🌾',name:'Granola',qty:2,unit:'tbsp',cals:100,protein:2,carbs:16,fat:3,swaps:[{icon:'🌰',name:'Crushed nuts',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🥥',name:'Coconut chips',qty:1,unit:'tbsp',cals:35,protein:0,carbs:2,fat:3,swaps:[]},
+    ],
+    steps:['Divide quark between bowls.','Top mango bowl with mango and granola.','Top strawberry bowl with sliced strawberries, banana and coconut chips.','Serve immediately.']
+  },
+  { id:36, emoji:'🍒', name:'Cherry Sorbet', kcal:109, protein:2, carbs:24, fat:1, serves:4, tags:['GF','V'], prepTime:'5 mins', cookTime:'0 mins',
+    ingredients:[
+      {icon:'🍒',name:'Frozen cherries',qty:400,unit:'g',cals:240,protein:4,carbs:60,fat:0,swaps:[{icon:'🍓',name:'Frozen strawberries',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍯',name:'Honey',qty:2,unit:'tbsp',cals:128,protein:0,carbs:35,fat:0,swaps:[{icon:'🍁',name:'Maple syrup',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍋',name:'Lemon juice',qty:1,unit:'tbsp',cals:4,protein:0,carbs:1,fat:0,swaps:[]},
+      {icon:'🫙',name:'Vanilla soy yogurt',qty:4,unit:'tbsp',cals:60,protein:2,carbs:10,fat:1,swaps:[{icon:'🫙',name:'Greek yogurt',diff:'+10 kcal',diffClass:'pos'}]},
+      {icon:'🌿',name:'Mint leaves',qty:1,unit:'handful',cals:5,protein:0,carbs:1,fat:0,swaps:[]},
+    ],
+    steps:['Place all ingredients in blender.','Blend until smooth.','Serve immediately or freeze for a firmer texture.','Garnish with mint leaves.']
+  },
+  { id:37, emoji:'🍠', name:'Simple Chili & Sweet Potato Chips', kcal:382, protein:29, carbs:33, fat:16, serves:4, tags:['GF','DF','HP'], prepTime:'15 mins', cookTime:'30 mins',
+    ingredients:[
+      {icon:'🍠',name:'Sweet potatoes',qty:3,unit:'medium',cals:310,protein:5,carbs:72,fat:0,swaps:[{icon:'🥔',name:'Regular potatoes',diff:'-10 kcal',diffClass:'neg'}]},
+      {icon:'🥩',name:'Lean ground beef',qty:450,unit:'g',cals:480,protein:72,carbs:0,fat:18,swaps:[{icon:'🦃',name:'Turkey mince',diff:'-80 kcal',diffClass:'neg'}]},
+      {icon:'🍅',name:'Canned tomatoes',qty:400,unit:'g',cals:80,protein:4,carbs:16,fat:0,swaps:[]},
+      {icon:'🥑',name:'Avocado, mashed',qty:1,unit:'',cals:240,protein:3,carbs:12,fat:22,swaps:[]},
+      {icon:'🌶',name:'Chili flakes + spices',qty:1,unit:'serve',cals:15,protein:0,carbs:3,fat:0,swaps:[]},
+    ],
+    steps:['Preheat oven to 200°C. Toss sweet potato wedges with spices, flour and oil.','Bake 25–30 mins until crispy.','Meanwhile brown beef in pan. Add chili, tomatoes and water. Simmer 15 mins.','Serve chili over chips topped with mashed avocado and coriander.']
+  },
+  { id:38, emoji:'🍜', name:'Quick Beef Chow Mein', kcal:325, protein:28, carbs:33, fat:10, serves:4, tags:[], prepTime:'10 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🥩',name:'Beef tenderloin',qty:200,unit:'g',cals:240,protein:36,carbs:0,fat:8,swaps:[{icon:'🐔',name:'Chicken strips',diff:'-20 kcal',diffClass:'neg'}]},
+      {icon:'🍜',name:'Egg noodles',qty:160,unit:'g',cals:560,protein:20,carbs:110,fat:4,swaps:[{icon:'🍜',name:'Rice noodles',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🫑',name:'Leek + bell pepper + mushrooms',qty:1,unit:'serve',cals:55,protein:2,carbs:12,fat:0,swaps:[]},
+      {icon:'🫙',name:'Soy sauce + sesame oil',qty:3,unit:'tbsp',cals:50,protein:2,carbs:4,fat:3,swaps:[]},
+      {icon:'🧄',name:'Garlic + ginger',qty:1,unit:'serve',cals:15,protein:0,carbs:3,fat:0,swaps:[]},
+    ],
+    steps:['Cook noodles per instructions. Set aside.','Slice beef thin. Season with white pepper, sugar and some soy sauce.','Stir fry garlic and ginger in sesame oil. Add beef, cook 2 mins. Remove.','Stir fry veg 3 mins. Add noodles, remaining soy sauce and water.','Return beef, toss everything together. Top with spring onions.']
+  },
+  { id:39, emoji:'🥩', name:'Quick & Easy Meatballs', kcal:309, protein:36, carbs:9, fat:14, serves:4, tags:['GF','HP'], prepTime:'15 mins', cookTime:'20 mins',
+    ingredients:[
+      {icon:'🥩',name:'Lean ground beef',qty:500,unit:'g',cals:535,protein:75,carbs:0,fat:23,swaps:[{icon:'🦃',name:'Turkey mince',diff:'-80 kcal',diffClass:'neg'}]},
+      {icon:'🥚',name:'Egg',qty:1,unit:'',cals:72,protein:6,carbs:0,fat:5,swaps:[]},
+      {icon:'🌾',name:'Buckwheat flour',qty:30,unit:'g',cals:102,protein:4,carbs:21,fat:1,swaps:[{icon:'🌾',name:'Almond flour',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🥓',name:'Streaky bacon',qty:12,unit:'slices',cals:360,protein:24,carbs:0,fat:30,swaps:[{icon:'🚫',name:'Omit bacon',diff:'-360 kcal',diffClass:'neg'}]},
+      {icon:'🫑',name:'Onion + garlic + pepper',qty:1,unit:'serve',cals:50,protein:2,carbs:10,fat:0,swaps:[]},
+    ],
+    steps:['Mix beef, onion, garlic, red pepper, egg, flour, coriander and oregano.','Shape into meatballs and wrap each in bacon.','Bake at 200°C for 20 mins or pan-fry until cooked through.','Serve with your choice of sides.']
+  },
+  { id:40, emoji:'🥩', name:'Pepper Steak', kcal:187, protein:22, carbs:12, fat:6, serves:4, tags:['GF','DF','LC'], prepTime:'10 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🥩',name:'Round beef, trimmed',qty:340,unit:'g',cals:408,protein:60,carbs:0,fat:16,swaps:[{icon:'🥩',name:'Sirloin strips',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🫑',name:'Bell pepper + onion',qty:1,unit:'serve',cals:55,protein:2,carbs:12,fat:0,swaps:[]},
+      {icon:'🫙',name:'Soy sauce',qty:4,unit:'tsp + 3 tbsp',cals:40,protein:4,carbs:4,fat:0,swaps:[{icon:'🫙',name:'Tamari (GF)',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🌾',name:'Buckwheat flour',qty:3,unit:'tsp',cals:31,protein:1,carbs:6,fat:0,swaps:[]},
+      {icon:'🥥',name:'Coconut oil',qty:2,unit:'tsp',cals:80,protein:0,carbs:0,fat:9,swaps:[]},
+    ],
+    steps:['Marinate beef in 4 tsp soy sauce and rice wine with buckwheat flour.','Stir fry beef in coconut oil over high heat. Remove.','Stir fry onion and pepper until tender. Return beef.','Add remaining soy sauce and black pepper, toss to combine.','Serve over rice or noodles.']
+  },
+  { id:41, emoji:'🍍', name:'Sweet & Sour Pork Stir-Fry', kcal:446, protein:22, carbs:52, fat:16, serves:4, tags:[], prepTime:'10 mins', cookTime:'20 mins',
+    ingredients:[
+      {icon:'🥩',name:'Pork loin',qty:300,unit:'g',cals:360,protein:60,carbs:0,fat:12,swaps:[{icon:'🐔',name:'Chicken breast',diff:'-40 kcal',diffClass:'neg'}]},
+      {icon:'🍚',name:'Basmati rice',qty:200,unit:'g',cals:260,protein:5,carbs:57,fat:0,swaps:[]},
+      {icon:'🍍',name:'Pineapple + cherry tomatoes',qty:1,unit:'serve',cals:120,protein:1,carbs:30,fat:0,swaps:[]},
+      {icon:'🫛',name:'Sugar snap peas',qty:200,unit:'g',cals:80,protein:5,carbs:13,fat:0,swaps:[]},
+      {icon:'🫙',name:'Ginger syrup + lime',qty:3,unit:'tbsp',cals:90,protein:0,carbs:22,fat:0,swaps:[]},
+    ],
+    steps:['Cook rice per instructions.','Slice pork, stir fry with garlic in coconut oil over high heat.','Add ginger syrup and lime. Add snap peas, tomatoes and pineapple.','Stir fry together 3–4 mins until everything is coated and cooked.','Serve over rice.']
+  },
+  { id:42, emoji:'🍝', name:'Pesto Pasta With Tuna & Almonds', kcal:512, protein:24, carbs:69, fat:16, serves:4, tags:['GF'], prepTime:'5 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🍝',name:'GF fusilli',qty:300,unit:'g',cals:1050,protein:21,carbs:225,fat:6,swaps:[{icon:'🍝',name:'Regular pasta',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🐟',name:'Tuna in water',qty:240,unit:'g',cals:192,protein:42,carbs:0,fat:2,swaps:[{icon:'🐟',name:'Canned salmon',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🌿',name:'Green pesto',qty:130,unit:'g',cals:390,protein:6,carbs:4,fat:40,swaps:[{icon:'🌿',name:'Red pesto',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🌳',name:'Green beans',qty:400,unit:'g',cals:140,protein:8,carbs:28,fat:0,swaps:[]},
+      {icon:'🌰',name:'Roasted almonds',qty:30,unit:'g',cals:174,protein:6,carbs:6,fat:15,swaps:[{icon:'🌰',name:'Pine nuts',diff:'+20 kcal',diffClass:'pos'}]},
+    ],
+    steps:['Cook pasta per instructions. Add green beans for last 4 mins.','Drain pasta and beans, reserving some pasta water.','Mix pesto through pasta, adding pasta water to loosen.','Add tuna and toss gently.','Serve topped with chopped roasted almonds.']
+  },
+  { id:43, emoji:'🍊', name:'Chicken Orange Stir Fry', kcal:397, protein:34, carbs:53, fat:7, serves:4, tags:[], prepTime:'10 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🐔',name:'Chicken breast',qty:450,unit:'g',cals:495,protein:99,carbs:0,fat:9,swaps:[{icon:'🥩',name:'Pork strips',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🍚',name:'Brown rice, cooked',qty:450,unit:'g',cals:585,protein:12,carbs:125,fat:5,swaps:[{icon:'🍚',name:'White rice',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🍊',name:'Orange + marmalade sauce',qty:1,unit:'serve',cals:130,protein:0,carbs:32,fat:0,swaps:[]},
+      {icon:'🫛',name:'Snap peas + bell pepper',qty:1,unit:'serve',cals:55,protein:3,carbs:11,fat:0,swaps:[]},
+      {icon:'🥕',name:'Carrot + sesame seeds',qty:1,unit:'serve',cals:30,protein:1,carbs:6,fat:1,swaps:[]},
+    ],
+    steps:['Mix sauce: orange juice, marmalade, soy sauce, sriracha and buckwheat flour.','Stir fry chicken in coconut oil until golden. Add garlic and spring onions.','Add snap peas and pepper, stir fry 2 mins.','Pour in sauce, cook until thickened.','Serve over brown rice with grated carrot and sesame seeds.']
+  },
+  { id:44, emoji:'🐟', name:'Salmon Teriyaki With Green Beans & Sweetcorn Rice', kcal:507, protein:45, carbs:40, fat:19, serves:4, tags:['GF','DF','HP'], prepTime:'10 mins', cookTime:'20 mins',
+    ingredients:[
+      {icon:'🐟',name:'Salmon fillets',qty:600,unit:'g',cals:792,protein:100,carbs:0,fat:48,swaps:[{icon:'🐟',name:'Trout',diff:'-40 kcal',diffClass:'neg'}]},
+      {icon:'🍚',name:'Brown rice',qty:100,unit:'g',cals:130,protein:3,carbs:27,fat:1,swaps:[{icon:'🌾',name:'Cauliflower rice',diff:'-110 kcal',diffClass:'neg'}]},
+      {icon:'🌿',name:'Green beans',qty:150,unit:'g',cals:53,protein:3,carbs:10,fat:0,swaps:[]},
+      {icon:'🌽',name:'Sweetcorn',qty:150,unit:'g',cals:131,protein:5,carbs:29,fat:2,swaps:[]},
+      {icon:'🫙',name:'Teriyaki sauce',qty:1,unit:'serve',cals:120,protein:4,carbs:20,fat:3,swaps:[]},
+    ],
+    steps:['Make teriyaki sauce: soy sauce, maple syrup, lime juice, ginger, garlic.','Cook brown rice. Add sweetcorn when nearly done.','Pan fry salmon 3–4 mins each side. Pour sauce over, cook 2 more mins until glazed.','Steam or boil green beans 3 mins.','Serve salmon over rice with green beans. Sprinkle sesame seeds.']
+  },
+  { id:45, emoji:'🥭', name:'Chicken & Mango Stir Fry', kcal:308, protein:29, carbs:31, fat:9, serves:4, tags:[], prepTime:'10 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🐔',name:'Chicken breasts, strips',qty:450,unit:'g',cals:495,protein:99,carbs:0,fat:9,swaps:[{icon:'🥩',name:'Pork strips',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🥭',name:'Mango, peeled',qty:1,unit:'',cals:135,protein:2,carbs:35,fat:1,swaps:[{icon:'🍍',name:'Pineapple',diff:'-10 kcal',diffClass:'neg'}]},
+      {icon:'🫑',name:'Bell pepper + red onion',qty:1,unit:'serve',cals:60,protein:2,carbs:14,fat:0,swaps:[]},
+      {icon:'🧄',name:'Garlic + ginger + chili',qty:1,unit:'serve',cals:20,protein:1,carbs:4,fat:0,swaps:[]},
+      {icon:'🫙',name:'Sweet soy sauce',qty:1,unit:'serve',cals:100,protein:2,carbs:20,fat:0,swaps:[]},
+    ],
+    steps:['Dust chicken in buckwheat flour. Stir fry in coconut oil until golden.','Add garlic, ginger and chili, cook 1 min.','Add pepper, onion and mango. Stir fry 2–3 mins.','Add sauce, toss to coat everything evenly.','Serve over rice or noodles.']
+  },
+  { id:46, emoji:'🥩', name:'Beef & Green Beans Pasta In Soy Sauce', kcal:491, protein:44, carbs:53, fat:12, serves:2, tags:[], prepTime:'10 mins', cookTime:'15 mins',
+    ingredients:[
+      {icon:'🥩',name:'Beef steak',qty:300,unit:'g',cals:360,protein:54,carbs:0,fat:12,swaps:[{icon:'🐔',name:'Chicken breast',diff:'-80 kcal',diffClass:'neg'}]},
+      {icon:'🍝',name:'Whole-wheat pasta',qty:120,unit:'g',cals:420,protein:16,carbs:86,fat:2,swaps:[{icon:'🍝',name:'GF pasta',diff:'±0 kcal',diffClass:'neg'}]},
+      {icon:'🌿',name:'Green beans',qty:100,unit:'g',cals:35,protein:2,carbs:7,fat:0,swaps:[{icon:'🥦',name:'Broccoli',diff:'+5 kcal',diffClass:'pos'}]},
+      {icon:'🫙',name:'Soy sauce + beef stock',qty:1,unit:'serve',cals:45,protein:3,carbs:4,fat:1,swaps:[]},
+      {icon:'🧄',name:'Garlic + spring onions',qty:1,unit:'serve',cals:20,protein:1,carbs:4,fat:0,swaps:[]},
+    ],
+    steps:['Cook pasta per instructions.','Slice beef. Stir fry with garlic in coconut oil over high heat.','Add spring onions, soy sauce and beef stock. Simmer 2 mins.','Add frozen green beans, cook 3 more mins.','Toss with drained pasta and serve.']
+  },
+  { id:47, emoji:'🍚', name:'Mexican Fried Rice', kcal:360, protein:24, carbs:32, fat:16, serves:4, tags:['GF','DF'], prepTime:'10 mins', cookTime:'20 mins',
+    ingredients:[
+      {icon:'🐔',name:'Chicken breast',qty:300,unit:'g',cals:330,protein:66,carbs:0,fat:6,swaps:[{icon:'🫘',name:'Black beans (V)',diff:'-120 kcal',diffClass:'neg'}]},
+      {icon:'🍚',name:'Rice',qty:100,unit:'g',cals:130,protein:3,carbs:29,fat:0,swaps:[]},
+      {icon:'🥑',name:'Avocado',qty:1,unit:'',cals:240,protein:3,carbs:12,fat:22,swaps:[]},
+      {icon:'🫘',name:'Kidney beans + sweetcorn',qty:1,unit:'serve',cals:130,protein:7,carbs:25,fat:1,swaps:[]},
+      {icon:'🌶',name:'Mexican spice mix',qty:1,unit:'serve',cals:20,protein:1,carbs:4,fat:0,swaps:[]},
+    ],
+    steps:['Cook rice, season chicken with spices, fry in coconut oil until cooked. Slice.','Fry onion and pepper in same pan. Add garlic, cook 1 min.','Add rice, beans, corn and tomato. Stir fry 3–4 mins.','Mix in lime juice, chili and coriander.','Serve topped with diced avocado and chicken.']
+  },
+  { id:48, emoji:'🍛', name:'Simple Chicken Curry With Saffron Rice', kcal:531, protein:36, carbs:47, fat:22, serves:4, tags:[], prepTime:'10 mins', cookTime:'40 mins',
+    ingredients:[
+      {icon:'🍗',name:'Chicken thigh fillets',qty:8,unit:'',cals:880,protein:120,carbs:0,fat:40,swaps:[{icon:'🐔',name:'Chicken breast',diff:'-200 kcal',diffClass:'neg'}]},
+      {icon:'🍅',name:'Tomatoes + onion + spices',qty:1,unit:'serve',cals:100,protein:3,carbs:22,fat:1,swaps:[]},
+      {icon:'🍚',name:'Basmati rice',qty:225,unit:'g',cals:295,protein:6,carbs:66,fat:1,swaps:[]},
+      {icon:'🌿',name:'Saffron',qty:0.125,unit:'tsp',cals:2,protein:0,carbs:0,fat:0,swaps:[]},
+      {icon:'🧄',name:'Ginger + garlic + turmeric',qty:1,unit:'serve',cals:25,protein:1,carbs:5,fat:0,swaps:[]},
+    ],
+    steps:['Fry onion in oil until soft. Add ginger and garlic, cook 2 mins.','Add chicken, turmeric, black pepper and tomatoes. Simmer until chicken is cooked through.','Steep saffron in boiling water. Cook rice in vegetable stock with coconut oil, onion powder, salt and saffron water.','Serve curry over saffron rice.']
+  },
+  { id:49, emoji:'🌶', name:'One Pot Turkey Chili With Rice', kcal:295, protein:31, carbs:21, fat:9, serves:4, tags:['GF','DF'], prepTime:'10 mins', cookTime:'25 mins',
+    ingredients:[
+      {icon:'🦃',name:'Turkey mince',qty:300,unit:'g',cals:330,protein:60,carbs:0,fat:12,swaps:[{icon:'🥩',name:'Lean beef mince',diff:'+20 kcal',diffClass:'pos'}]},
+      {icon:'🍚',name:'Rice',qty:115,unit:'g',cals:150,protein:3,carbs:33,fat:0,swaps:[]},
+      {icon:'🍅',name:'Canned tomatoes + pepper',qty:1,unit:'serve',cals:60,protein:2,carbs:12,fat:0,swaps:[]},
+      {icon:'🫘',name:'Kidney beans + sweetcorn',qty:1,unit:'serve',cals:130,protein:7,carbs:25,fat:1,swaps:[]},
+      {icon:'🌶',name:'Chili spice mix',qty:1,unit:'serve',cals:20,protein:1,carbs:4,fat:0,swaps:[]},
+    ],
+    steps:['Fry onion and garlic in oil until soft.','Add turkey, cook until browned. Season with spices.','Add tomatoes, pepper, broth, beans and corn. Stir well.','Add rice, cover and simmer 15–20 mins until rice is cooked.','Serve with grated cheese if desired.']
+  },
+  { id:50, emoji:'🐟', name:'Baked Salmon Tray With Rice & Tomatoes', kcal:476, protein:31, carbs:44, fat:19, serves:4, tags:['GF','DF'], prepTime:'10 mins', cookTime:'30 mins',
+    ingredients:[
+      {icon:'🐟',name:'Salmon fillet',qty:400,unit:'g',cals:528,protein:56,carbs:0,fat:32,swaps:[{icon:'🐟',name:'Cod fillet',diff:'-120 kcal',diffClass:'neg'}]},
+      {icon:'🍚',name:'Jasmine rice',qty:200,unit:'g',cals:260,protein:5,carbs:57,fat:0,swaps:[]},
+      {icon:'🍅',name:'Cherry tomatoes + basil',qty:1,unit:'serve',cals:50,protein:2,carbs:10,fat:0,swaps:[]},
+      {icon:'🫙',name:'Honey-soy-paprika glaze',qty:1,unit:'serve',cals:80,protein:2,carbs:14,fat:2,swaps:[]},
+      {icon:'🫙',name:'Natural yogurt',qty:4,unit:'tbsp',cals:44,protein:5,carbs:5,fat:1,swaps:[]},
+    ],
+    steps:['Preheat oven to 200°C.','Mix glaze: honey, soy sauce, olive oil, lemon, paprika, curry, oregano and chili.','Place salmon on baking tray. Score flesh, rub with glaze. Scatter tomatoes around.','Bake 25–30 mins until salmon is cooked through.','Cook rice. Serve salmon with rice, tomatoes and a dollop of yogurt.']
+  },
+];
+
+// Active recipe index
+let activeRecipeIdx = 0;
+
+function openRecipe(idx) {
+  activeRecipeIdx = idx;
+  const r = recipeLibrary[idx];
+  // Update recipe screen header
+  document.querySelector('#screen-recipe .nav-title').textContent = 'RECIPE';
+  const heroDiv = document.querySelector('#screen-recipe .scroll-content > div:first-child');
+  heroDiv.querySelector('div:nth-child(1)').textContent = r.emoji;
+  heroDiv.querySelector('div:nth-child(2)').textContent = r.name.toUpperCase();
+  heroDiv.querySelector('div:nth-child(3)').textContent = 'From your 52-recipe meal plan library';
+  // Reset scale
+  currentScale = 1.0;
+  if(document.getElementById('scale-slider')) document.getElementById('scale-slider').value = 1;
+  if(document.getElementById('scale-val')) document.getElementById('scale-val').textContent = '1.0× (base)';
+  goTo('screen-recipe');
+}
+
+// ---- RECIPE DATA (for detail screen — defaults to first recipe) ----
+const baseIngredients = recipeLibrary[0].ingredients;
+
+let currentIngredients = recipeLibrary[0].ingredients.map(i => ({...i}));
+let currentScale = 1.0;
+let swapIndex = -1;
+
+function renderIngredients() {
+  const list = document.getElementById('ingredients-list');
+  list.innerHTML = currentIngredients.map((ing, i) => `
+    <div class="ingr-item" onclick="openSwap(${i})">
+      <div class="ingr-icon">${ing.icon}</div>
+      <div class="ingr-info">
+        <div class="ingr-name">${ing.name}</div>
+        <div class="ingr-qty">${scaleQty(ing.qty, ing.unit)}</div>
+        <div class="ingr-swap-hint">tap to swap →</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ingr-cals">${Math.round(ing.cals * currentScale)}</div>
+        <div style="font-size:9px;color:var(--muted);">kcal</div>
+      </div>
+    </div>
+  `).join('');
+  updateTotals();
+}
+
+function scaleQty(qty, unit) {
+  const scaled = (qty * currentScale).toFixed(currentScale === 1 ? 0 : 1);
+  return `${scaled}${unit}`;
+}
+
+function updateTotals() {
+  const totals = currentIngredients.reduce((acc, ing) => {
+    acc.cals += ing.cals; acc.protein += ing.protein;
+    acc.carbs += ing.carbs; acc.fat += ing.fat;
+    return acc;
+  }, {cals:0,protein:0,carbs:0,fat:0});
+  document.getElementById('recipe-cals').textContent = Math.round(totals.cals * currentScale);
+  document.getElementById('recipe-protein').textContent = Math.round(totals.protein * currentScale) + 'g';
+  document.getElementById('recipe-carbs').textContent = Math.round(totals.carbs * currentScale) + 'g';
+  document.getElementById('recipe-fat').textContent = Math.round(totals.fat * currentScale) + 'g';
+}
+
+function scaleRecipe(val) {
+  currentScale = parseFloat(val);
+  const label = currentScale === 1 ? '1.0× (base)' : currentScale + '×';
+  document.getElementById('scale-val').textContent = label;
+  renderIngredients();
+}
+
+function openSwap(idx) {
+  swapIndex = idx;
+  const ing = currentIngredients[idx];
+  document.getElementById('swap-subtitle').textContent = 'Replacing: ' + ing.name;
+  const opts = document.getElementById('swap-options');
+  opts.innerHTML = ing.swaps.map((s, si) => `
+    <div class="swap-opt" onclick="doSwap(${si})">
+      <div class="swap-opt-icon">${s.icon}</div>
+      <div class="swap-opt-name">${s.name}</div>
+      <div class="swap-opt-diff ${s.diffClass}">${s.diff}</div>
+    </div>
+  `).join('');
+  const modal = document.getElementById('swap-modal');
+  modal.style.display = 'flex';
+}
+
+function doSwap(swapOptionIdx) {
+  const ing = currentIngredients[swapIndex];
+  const swap = ing.swaps[swapOptionIdx];
+  const calDiff = parseInt(swap.diff.replace(/[^-0-9]/g,'')) || 0;
+  currentIngredients[swapIndex] = {
+    ...ing,
+    icon: swap.icon,
+    name: swap.name,
+    cals: Math.max(0, ing.cals + calDiff),
+    swaps: ing.swaps
+  };
+  closeSwap();
+  renderIngredients();
+}
+
+function closeSwap() {
+  document.getElementById('swap-modal').style.display = 'none';
+}
+
+// ---- NOTIFICATIONS (automated daily motivation) ----
+const motivationMessages = [
+  "Morning. Scale doesn't lie — you're 4kg down and lean mass is up. Stay the course today.",
+  "Same foods, adjusted portions. That's it. That's the system. Trust it.",
+  "Farm-built physiques don't come from perfect weeks. They come from consistent ones. Keep going.",
+  "Your check-in data is looking good. Don't change what's working.",
+  "Weigh-in this morning. Log it even if it's not what you expected. Data beats feelings.",
+  "Recovery matters as much as training. If you're dragging today, eat and sleep first.",
+  "14-year grind to 95kg. Every meal you hit today is part of that story.",
+];
+
+let notifIndex = 0;
+let notifTimeout;
+
+function showNotification() {
+  const toast = document.getElementById('notif-toast');
+  document.getElementById('notif-text').textContent = motivationMessages[notifIndex % motivationMessages.length];
+  notifIndex++;
+  toast.style.display = 'block';
+  toast.style.animation = 'none';
+  toast.offsetHeight; // reflow
+  toast.style.animation = 'fadeIn 0.3s ease';
+  clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(() => { toast.style.display = 'none'; }, 5000);
+}
+
+// ---- RECIPE LIBRARY RENDERING ----
+function renderLibrary(filter) {
+  const grid = document.getElementById('library-grid');
+  if(!grid) return;
+  const list = filter && filter !== 'all'
+    ? recipeLibrary.filter(r => r.tags.includes(filter))
+    : recipeLibrary;
+  grid.innerHTML = list.map(r => `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color 0.2s,transform 0.2s;"
+      onmouseover="this.style.borderColor='var(--amber-dim)';this.style.transform='translateX(3px)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.transform=''"
+      onclick="activeRecipeIdx=${r.id};goTo('screen-recipe')">
+      <div style="font-size:32px;width:44px;text-align:center;">${r.emoji}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;font-size:14px;margin-bottom:4px;">${r.name}</div>
+        <div style="font-size:11px;color:var(--muted);">${r.prepTime} prep · Serves ${r.serves}</div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          ${r.tags.map(t => `<span style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:9px;color:var(--muted);font-weight:600;letter-spacing:0.5px;">${t}</span>`).join('')}
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--amber);letter-spacing:1px;">${r.kcal}</div>
+        <div style="font-size:9px;color:var(--muted);">kcal</div>
+        <div style="font-size:11px;color:var(--green);font-family:'DM Mono',monospace;margin-top:2px;">${r.protein}g P</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterRecipes(tag, el) {
+  document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderLibrary(tag);
+}
+
+// Render library when navigating to it
+const _origGoTo = goTo;
+goTo = function(id) {
+  _origGoTo(id);
+  if(id === 'screen-library') renderLibrary('all');
+};
+setTimeout(showNotification, 2000);
+setInterval(showNotification, 30000);
+
+// Make meal items in nutrition screen open recipe detail
+document.addEventListener('DOMContentLoaded', () => {
+  // Route smoothie card to recipe screen
+  const mealItems = document.querySelectorAll('#screen-nutrition .meal-item');
+  if (mealItems[2]) {
+    mealItems[2].addEventListener('click', () => goTo('screen-recipe'));
+  }
+  // Route "Post-Workout" from dashboard too
+  const dashCard = document.querySelector('#screen-dashboard .plan-card');
+  // Add check-in shortcut from dashboard coach card
+  const coachCard = document.querySelector('#screen-dashboard .coach-card');
+  if (coachCard) coachCard.style.cursor = 'pointer';
+});
+</script>
+</body>
+</html>
