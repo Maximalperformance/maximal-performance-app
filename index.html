@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Maximal Performance</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --black: #0a0a0a;
@@ -871,8 +872,29 @@
       <p class="onboard-tagline">Built for athletes who eat the <strong>same foods, adjusted portions</strong> — and track everything.</p>
     </div>
     <div class="onboard-actions">
-      <button class="btn-primary" onclick="goTo('screen-dashboard')">GET STARTED</button>
-      <button class="btn-secondary" onclick="goTo('screen-dashboard')">I already have an account</button>
+      <!-- Auth tabs -->
+      <div style="display:flex;gap:0;margin-bottom:20px;background:var(--surface2);border-radius:12px;padding:4px;">
+        <button id="tab-signup" onclick="switchAuthTab('signup')" style="flex:1;padding:10px;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:var(--amber);color:var(--black);transition:all 0.2s;">Create Account</button>
+        <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:10px;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:all 0.2s;">Sign In</button>
+      </div>
+
+      <!-- Signup fields -->
+      <div id="auth-signup">
+        <input id="signup-name" type="text" placeholder="Full name" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--snow);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:10px;">
+        <input id="signup-email" type="email" placeholder="Email address" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--snow);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:10px;">
+        <input id="signup-password" type="password" placeholder="Password (min 6 characters)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--snow);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:16px;">
+        <button class="btn-primary" onclick="handleSignup()">CREATE ACCOUNT</button>
+      </div>
+
+      <!-- Login fields -->
+      <div id="auth-login" style="display:none;">
+        <input id="login-email" type="email" placeholder="Email address" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--snow);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:10px;">
+        <input id="login-password" type="password" placeholder="Password" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--snow);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:16px;">
+        <button class="btn-primary" onclick="handleLogin()">SIGN IN</button>
+      </div>
+
+      <!-- Auth message -->
+      <div id="auth-msg" style="margin-top:12px;text-align:center;font-size:13px;color:var(--muted);min-height:20px;"></div>
     </div>
   </div>
 
@@ -1372,11 +1394,11 @@
           </div>
           <div class="settings-arrow">›</div>
         </div>
-        <div class="settings-item">
-          <div class="settings-icon">⚙️</div>
+        <div class="settings-item" onclick="handleSignOut()">
+          <div class="settings-icon">🚪</div>
           <div class="settings-text">
-            <div class="settings-name">Account Settings</div>
-            <div class="settings-sub">Plan · Billing · Units</div>
+            <div class="settings-name">Sign Out</div>
+            <div class="settings-sub">Log out of your account</div>
           </div>
           <div class="settings-arrow">›</div>
         </div>
@@ -1853,6 +1875,134 @@
 </style>
 
 <script>
+// ---- SUPABASE INIT ----
+// Replace these with your actual values from Vercel env vars
+// For the live app these are injected — for local testing paste them here temporarily
+const SUPABASE_URL = window.__SUPABASE_URL__ || 'https://hpmwylrqrlttyzigpvlc.supabase.co';
+const SUPABASE_KEY = window.__SUPABASE_KEY__ || 'sb_publishable_y_IAVVXDuPyzB8r4bqbziw_n_XunAyi';
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+let currentUser = null;
+let currentProfile = null;
+
+// ---- AUTH FUNCTIONS ----
+function switchAuthTab(tab) {
+  const isSignup = tab === 'signup';
+  document.getElementById('auth-signup').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('auth-login').style.display = isSignup ? 'none' : 'block';
+  document.getElementById('tab-signup').style.background = isSignup ? 'var(--amber)' : 'transparent';
+  document.getElementById('tab-signup').style.color = isSignup ? 'var(--black)' : 'var(--muted)';
+  document.getElementById('tab-login').style.background = isSignup ? 'transparent' : 'var(--amber)';
+  document.getElementById('tab-login').style.color = isSignup ? 'var(--muted)' : 'var(--black)';
+  document.getElementById('auth-msg').textContent = '';
+}
+
+function setAuthMsg(msg, isError) {
+  const el = document.getElementById('auth-msg');
+  el.textContent = msg;
+  el.style.color = isError ? '#e05a5a' : 'var(--green)';
+}
+
+async function handleSignup() {
+  if (!supabase) { goTo('screen-dashboard'); return; }
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  if (!name || !email || !password) { setAuthMsg('Please fill in all fields.', true); return; }
+  setAuthMsg('Creating your account...', false);
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  if (error) { setAuthMsg(error.message, true); return; }
+  if (data.user) {
+    // Create profile row
+    await supabase.from('profiles').insert({
+      id: data.user.id,
+      full_name: name,
+      tier: 'self_guided',
+      goal_weight: 95,
+      daily_calories: 3100
+    });
+    currentUser = data.user;
+    currentProfile = { full_name: name, tier: 'self_guided' };
+    setAuthMsg('Account created! Check your email to confirm.', false);
+    setTimeout(() => loadDashboard(), 1500);
+  }
+}
+
+async function handleLogin() {
+  if (!supabase) { goTo('screen-dashboard'); return; }
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!email || !password) { setAuthMsg('Please enter email and password.', true); return; }
+  setAuthMsg('Signing in...', false);
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) { setAuthMsg(error.message, true); return; }
+  currentUser = data.user;
+  await loadUserProfile();
+  loadDashboard();
+}
+
+async function handleSignOut() {
+  if (supabase) await supabase.auth.signOut();
+  currentUser = null;
+  currentProfile = null;
+  goTo('screen-onboard');
+}
+
+async function loadUserProfile() {
+  if (!supabase || !currentUser) return;
+  const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (data) {
+    currentProfile = data;
+    // Update profile screen
+    const nameEl = document.querySelector('#screen-profile .profile-name');
+    const tierEl = document.querySelector('#screen-profile .profile-tier');
+    if (nameEl) nameEl.textContent = (data.full_name || 'Athlete').toUpperCase();
+    if (tierEl) tierEl.textContent = data.tier === 'premium' ? 'Premium Coaching' : 'Self-Guided';
+  }
+}
+
+async function loadWeightHistory() {
+  if (!supabase || !currentUser) return;
+  const { data } = await supabase
+    .from('weight_logs')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('logged_at', { ascending: false })
+    .limit(1);
+  if (data && data.length > 0) {
+    const latest = data[0];
+    // Update dashboard metrics
+    const metricVals = document.querySelectorAll('.metric-val');
+    if (metricVals[0]) metricVals[0].innerHTML = latest.weight_kg + '<span class="metric-unit">kg</span>';
+    if (metricVals[1]) metricVals[1].innerHTML = latest.body_fat_percent + '<span class="metric-unit">%</span>';
+    if (metricVals[2]) metricVals[2].innerHTML = latest.lean_mass_kg + '<span class="metric-unit">kg</span>';
+    // Update progress screen
+    const progEl = document.querySelector('.prog-current');
+    if (progEl) progEl.textContent = latest.weight_kg;
+  }
+}
+
+function loadDashboard() {
+  // Update greeting with real name
+  if (currentProfile) {
+    const nameEl = document.querySelector('.hero-name');
+    if (nameEl) nameEl.textContent = (currentProfile.full_name || 'Athlete').toUpperCase();
+  }
+  loadWeightHistory();
+  goTo('screen-dashboard');
+}
+
+// Check for existing session on load
+async function initAuth() {
+  if (!supabase) return;
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await loadUserProfile();
+    loadDashboard();
+  }
+}
+
 // ---- NAVIGATION ----
 function goTo(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1894,7 +2044,29 @@ function updateSlider(sliderId, valId, suffix) {
   const v = document.getElementById(sliderId).value;
   document.getElementById(valId).textContent = v + suffix;
 }
-function submitCheckin() {
+async function submitCheckin() {
+  const adherence = document.getElementById('adherence-slider').value;
+  const stress = document.getElementById('stress-slider').value;
+  const notes = document.querySelector('.checkin-textarea') ? document.querySelector('.checkin-textarea').value : '';
+  const feelEl = document.querySelector('#feel-select .emoji-opt.selected span');
+  const sleepEl = document.querySelector('#sleep-select .emoji-opt.selected span');
+
+  if (supabase && currentUser) {
+    const { error } = await supabase.from('checkins').insert({
+      user_id: currentUser.id,
+      week_number: 4,
+      body_feel: feelEl ? feelEl.textContent : '',
+      sessions_completed: counts.sessions,
+      adherence_percent: parseInt(adherence),
+      sleep_quality: sleepEl ? sleepEl.textContent : '',
+      stress_level: parseInt(stress),
+      notes: notes
+    });
+    if (error) {
+      alert('Error saving check-in. Please try again.');
+      return;
+    }
+  }
   alert('Check-in submitted! Coach Max will review within 24 hours and update your plan.');
   goTo('screen-dashboard');
 }
@@ -2588,14 +2760,14 @@ setInterval(showNotification, 30000);
 
 // Make meal items in nutrition screen open recipe detail
 document.addEventListener('DOMContentLoaded', () => {
+  // Init Supabase auth — auto-login if session exists
+  initAuth();
+
   // Route smoothie card to recipe screen
   const mealItems = document.querySelectorAll('#screen-nutrition .meal-item');
   if (mealItems[2]) {
     mealItems[2].addEventListener('click', () => goTo('screen-recipe'));
   }
-  // Route "Post-Workout" from dashboard too
-  const dashCard = document.querySelector('#screen-dashboard .plan-card');
-  // Add check-in shortcut from dashboard coach card
   const coachCard = document.querySelector('#screen-dashboard .coach-card');
   if (coachCard) coachCard.style.cursor = 'pointer';
 });
