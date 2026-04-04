@@ -2830,9 +2830,38 @@ setTimeout(showNotification, 2000);
 setInterval(showNotification, 30000);
 
 // Make meal items in nutrition screen open recipe detail
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Handle Withings OAuth callback
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  const state = urlParams.get('state');
+
+  if (code && state) {
+    try {
+      const res = await fetch(`https://hpmwylrqrlttyzigpvlc.supabase.co/functions/v1/withings-auth?code=${code}&state=${state}`);
+      const data = await res.json();
+      if (data.success) {
+        history.replaceState(null, '', '/');
+        await initAuth();
+        alert('Withings scale connected! Your metrics will sync daily.');
+      }
+    } catch(e) {
+      console.error('Withings auth error:', e);
+    }
+    return;
+  }
+
   // Init Supabase auth — auto-login if session exists
   initAuth();
+
+  // Route smoothie card to recipe screen
+  const mealItems = document.querySelectorAll('#screen-nutrition .meal-item');
+  if (mealItems[2]) {
+    mealItems[2].addEventListener('click', () => goTo('screen-recipe'));
+  }
+  const coachCard = document.querySelector('#screen-dashboard .coach-card');
+  if (coachCard) coachCard.style.cursor = 'pointer';
+});
 
   // Route smoothie card to recipe screen
   const mealItems = document.querySelectorAll('#screen-nutrition .meal-item');
