@@ -890,6 +890,7 @@ border-color: var(–amber);
     <input id="signup-email" type="email" placeholder="Email address" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--snow);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:10px;">
     <input id="signup-password" type="password" placeholder="Password (min 6 characters)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--snow);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:16px;">
     <button class="btn-primary" onclick="handleSignup()">CREATE ACCOUNT</button>
+<div style="text-align:center;margin-top:8px;font-size:12px;color:var(--muted);">Already purchased? <span style="color:var(--amber);cursor:pointer;" onclick="switchAuthTab('login')">Sign in here</span></div>
   </div>
 
   <!-- Login fields -->
@@ -1064,6 +1065,9 @@ border-color: var(–amber);
     </div>
   </div>
 
+</div>
+<div style="margin:0 16px 20px;">
+  <button class="btn-primary" onclick="goTo('screen-payment')">VIEW PLANS & PRICING</button>
 </div>
 
 <!-- Bottom Nav -->
@@ -2929,6 +2933,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
   const state = urlParams.get('state');
+  const payment = urlParams.get('payment');
+  const paymentTier = urlParams.get('tier');
+
 
   if (code && state) {
     try {
@@ -2950,6 +2957,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       await initAuth();
     }
     return;
+  }
+// Handle payment success redirect
+  if (payment === 'success' && paymentTier) {
+    history.replaceState(null, '', '/');
+    await initAuth();
+    setTimeout(() => alert(`Payment successful! Welcome to ${paymentTier === 'premium' ? "In Max's Corner" : 'Self Guided'}. Your plan is now active.`), 500);
+    return;
+  }
+
+  if (payment === 'cancelled') {
+    history.replaceState(null, '', '/');
   }
 
   // Normal auth init
