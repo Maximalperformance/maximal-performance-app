@@ -1444,6 +1444,71 @@ border-color: var(–amber);
 ```
 
   </div>
+<!-- =================== PAYMENT SCREEN =================== -->
+<div class="screen" id="screen-payment">
+  <div class="status-bar"><span>9:41</span><span>⬛⬛⬛ 100%</span></div>
+  <div class="top-nav">
+    <div class="back-btn" onclick="goTo('screen-onboard')">←</div>
+    <div class="nav-title">CHOOSE YOUR PLAN</div>
+    <div style="width:36px"></div>
+  </div>
+  <div class="scroll-content">
+
+    <div style="padding:0 16px 24px;">
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;">One-time payment. No subscription. Full access to your plan from day one.</div>
+    </div>
+
+    <!-- Self Guided -->
+    <div style="margin:0 16px 16px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;cursor:pointer;" onclick="startCheckout('self_guided')" id="plan-self-guided">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;">SELF GUIDED</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">12-Week Mass Building Program</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--amber);letter-spacing:1px;">$997</div>
+          <div style="font-size:10px;color:var(--muted);">one time</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+        <div style="font-size:13px;color:var(--snow);">✓ Full 12-week program</div>
+        <div style="font-size:13px;color:var(--snow);">✓ 52-recipe meal plan library</div>
+        <div style="font-size:13px;color:var(--snow);">✓ Withings scale integration</div>
+        <div style="font-size:13px;color:var(--snow);">✓ Weekly check-in tracking</div>
+        <div style="font-size:13px;color:var(--snow);">✓ Automated daily coaching messages</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--snow);">GET STARTED →</div>
+    </div>
+
+    <!-- Premium -->
+    <div style="margin:0 16px 16px;background:linear-gradient(135deg,#1a1400,#111);border:1px solid var(--amber-dim);border-radius:20px;padding:24px;cursor:pointer;position:relative;overflow:hidden;" onclick="startCheckout('premium')" id="plan-premium">
+      <div style="position:absolute;top:14px;right:14px;background:var(--amber);color:var(--black);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:6px;">BEST</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;">IN MAX'S CORNER</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">1-on-1 Premium Coaching</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--amber);letter-spacing:1px;">$3,000</div>
+          <div style="font-size:10px;color:var(--muted);">one time</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+        <div style="font-size:13px;color:var(--snow);">✓ Everything in Self Guided</div>
+        <div style="font-size:13px;color:var(--snow);">✓ Direct access to Coach Max</div>
+        <div style="font-size:13px;color:var(--snow);">✓ Custom plan adjustments weekly</div>
+        <div style="font-size:13px;color:var(--snow);">✓ Priority check-in reviews</div>
+        <div style="font-size:13px;color:var(--snow);">✓ Supplement recommendations</div>
+      </div>
+      <div style="background:var(--amber);border-radius:12px;padding:14px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--black);">GET STARTED →</div>
+    </div>
+
+    <div style="padding:0 16px;text-align:center;font-size:11px;color:var(--muted);line-height:1.6;">
+      Secure payment via Stripe. NZD pricing available at checkout.
+    </div>
+
+  </div>
+</div>
 
 <!-- =================== RECIPE LIBRARY =================== -->
 
