@@ -2061,6 +2061,32 @@ async function handleSignOut() {
   currentProfile = null;
   goTo('screen-onboard');
 }
+async function startCheckout(tier) {
+  if (!currentUser) { goTo('screen-onboard'); return; }
+  const client = getSupabase();
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/stripe-checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      },
+      body: JSON.stringify({
+        tier,
+        userId: currentUser.id,
+        email: currentUser.email
+      })
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Payment error: ' + (data.error || 'Unknown error'));
+    }
+  } catch(e) {
+    alert('Connection error. Please try again.');
+  }
+}
 
 function connectWithings() {
   if (!currentUser) return;
